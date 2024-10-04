@@ -102,11 +102,11 @@
             width: 100%;
         }
 
-        .btn, .back-button, .submit-button, .download-button {
+        .btn, .back-button, .submit-button, .download-button, .email-button {
             font-family: var(--font-family);
         }
 
-        .btn, .back-button, .submit-button, .download-button {
+        .btn, .back-button, .submit-button, .download-button, .email-button {
             background-color: var(--primary-color);
             color: var(--secondary-color);
             border: none;
@@ -119,13 +119,13 @@
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
         }
 
-        .btn:hover, .back-button:hover, .submit-button:hover, .download-button:hover {
+        .btn:hover, .back-button:hover, .submit-button:hover, .download-button:hover, .email-button:hover {
             background-color: var(--button-hover-bg);
             transform: translateY(-4px);
             box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
         }
 
-        .btn:active, .back-button:active, .submit-button:active, .download-button:active {
+        .btn:active, .back-button:active, .submit-button:active, .download-button:active, .email-button:active {
             transform: translateY(-2px);
             box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
         }
@@ -298,7 +298,7 @@
             border-radius: 5px;
         }
 
-        .download-button {
+        .download-button, .email-button {
             background-color: var(--secondary-color);
             color: var(--text-color);
             margin-top: 20px;
@@ -317,7 +317,7 @@
                 font-size: 1.6em;
             }
 
-            .btn, .back-button, .submit-button, .download-button {
+            .btn, .back-button, .submit-button, .download-button, .email-button {
                 padding: 14px 28px;
                 font-size: 1em;
             }
@@ -340,7 +340,7 @@
                 font-size: 1em;
             }
 
-            .download-button, .back-button {
+            .download-button, .email-button, .back-button {
                 margin-top: 20px;
             }
 
@@ -444,6 +444,9 @@
                 </div>
                 <button id="downloadReportButton" class="download-button">
                     <i class="fas fa-download"></i> Ladda ner Rapport
+                </button>
+                <button id="emailReportButton" class="email-button">
+                    <i class="fas fa-envelope"></i> Skicka Rapport via E-post
                 </button>
             </div>
         </main>
