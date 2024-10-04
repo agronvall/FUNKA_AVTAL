@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUNKA AVTAL - AVPROVNING CCTV</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome för Ikoner (Valfritt) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Uppdaterad CSS -->
+    <style>
+        /* CSS Variabler för Teman */
+        :root {
+            --primary-color: #002147; /* Mörkare Blå */
+            --accent-color: #FF0000;  /* Rödare Röd */
+            --secondary-color: #FFFFFF; /* Vit */
+            --background-color: #F0F4F8; /* Ljus Bakgrund */
+            --card-background: #FFFFFF; /* Vit */
+            --text-color: #2D3748; /* Mörk Text */
+            --header-footer-bg: #002147; /* Primär Färg */
+            --button-hover-bg: #001E5B; /* Mörkare Blå för Hover */
+            --font-family: 'Poppins', sans-serif;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
+        }
+
+        /* Globala Stilar */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+        }
+
+        .container {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 90%;
+            max-width: 900px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-top: 6px solid var(--accent-color);
+            transition: background-color var(--transition-speed) ease, border-top var(--transition-speed) ease;
+        }
+
+        header, footer {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--accent-color);
+        }
+
+        header h1, footer p {
+            color: var(--text-color);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        header h2 {
+            font-size: 1.2em;
+            font-weight: 400;
+            color: var(--text-color);
+            margin-top: 0;
+        }
+
+        footer {
+            border-top: 1px solid var(--accent-color);
+            border-bottom: none;
+        }
+
+        footer p {
+            font-size: 1em;
+            color: var(--secondary-color);
+            margin-top: 10px;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding: 30px 0;
+            width: 100%;
+        }
+
+        .btn, .back-button, .submit-button, .download-button {
+            font-family: var(--font-family);
+        }
+
+        .btn, .back-button, .submit-button, .download-button {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color var(--transition-speed) ease, transform 0.2s ease, box-shadow var(--transition-speed) ease;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:hover, .back-button:hover, .submit-button:hover, .download-button:hover {
+            background-color: var(--button-hover-bg);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active, .back-button:active, .submit-button:active, .download-button:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+        }
+
+        .output {
+            font-size: 1.3em;
+            color: var(--accent-color);
+            min-height: 24px;
+            transition: opacity var(--transition-speed) ease;
+            opacity: 0;
+        }
+
+        .output.visible {
+            opacity: 1;
+        }
+
+        /* Dekorativa Röd Linjer */
+        .decorative-line {
+            width: 100%;
+            height: 3px;
+            background-color: var(--accent-color);
+            margin: 15px 0;
+            border-radius: 2px;
+        }
+
+        /* Site Detaljer Stilar */
+        .site-details {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .site-header {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .hardware-list {
+            list-style-type: disc;
+            padding-left: 20px;
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        .hardware-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .hardware-item span {
+            flex-grow: 1;
+        }
+
+        .remove-button {
+            background-color: #FF6347; /* Tomatfärg */
+            color: #ffffff;
+            border: none;
+            padding: 5px 10px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color var(--transition-speed) ease;
+            margin-left: 10px;
+        }
+
+        .remove-button:hover {
+            background-color: #FF4500; /* Djupare tomatfärg */
+        }
+
+        /* Back Button Stilar */
+        .back-button {
+            align-self: flex-start;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+
+        /* Kamera Test Form Stilar */
+        .camera-form {
+            width: 100%;
+            margin-top: 25px;
+            padding: 25px;
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        .camera-form h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.5em;
+        }
+
+        .camera-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            transition: border-color var(--transition-speed) ease, background-color var(--transition-speed) ease;
+        }
+
+        .camera-item.not-working-card {
+            border-color: #FF0000;
+            background-color: #ffe6e6;
+        }
+
+        .test-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .test-item input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .test-item.not-working {
+            color: #FF0000; /* Röd färg för "Fungerar inte" */
+            font-weight: bold;
+        }
+
+        .comment-section {
+            margin-top: 15px;
+        }
+
+        .comment-section textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: vertical;
+            font-family: var(--font-family);
+            font-size: 1em;
+        }
+
+        .submit-button {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            align-self: flex-start;
+        }
+
+        /* Rapport Sektion Stilar */
+        .report-section {
+            width: 100%;
+            margin-top: 35px;
+            padding: 25px;
+            background-color: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden by default */
+        }
+
+        .report-section h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.5em;
+        }
+
+        .report-content {
+            white-space: pre-wrap;
+            color: var(--text-color);
+            font-size: 1.1em;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .download-button {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Responsiv Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px;
+            }
+
+            header h1, .site-header, .camera-form h2, .report-section h2 {
+                font-size: 1.6em;
+            }
+
+            .btn, .back-button, .submit-button, .download-button {
+                padding: 14px 28px;
+                font-size: 1em;
+            }
+
+            .output {
+                font-size: 1.1em;
+            }
+
+            .hardware-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .remove-button {
+                margin-left: 0;
+                margin-top: 5px;
+            }
+
+            .host-name, .hardware-item {
+                font-size: 1em;
+            }
+
+            .download-button, .back-button {
+                margin-top: 20px;
+            }
+
+            .decorative-line {
+                height: 2px;
+            }
+        }
+
+        /* Laddningsindikator Stilar */
+        #loadingIndicator {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 33, 71, 0.9); /* Semi-transparent mörkblå */
+            color: #ffffff;
+            padding: 25px 50px;
+            border-radius: 12px;
+            font-size: 1.3em;
+            z-index: 1000;
+        }
+
+        /* Bekräftelse Modal Stilar */
+        #confirmationModal {
+            display: none; /* Ensure the modal is hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+        }
+
+        #confirmationModal .modal-content {
+            background-color: var(--card-background);
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: var(--box-shadow);
+        }
+
+        #confirmationModal h2 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        #confirmationModal p {
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        #confirmationModal .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        #confirmationModal .modal-buttons button {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sitespecifika Detaljer</h1>
+            <h2>CCTV</h2>
+            <div class="decorative-line"></div>
+        </header>
+        
+        <main>
+            <!-- Back Button -->
+            <button class="back-button" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i> Tillbaka
+            </button>
+            
+            <!-- Site Details -->
+            <div id="siteDetails" class="site-details">
+                <!-- Site details will be dynamically loaded here -->
+            </div>
+            
+            <!-- Kamera Test Form -->
+            <div class="camera-form">
+                <h2>Testa Kameror</h2>
+                <form id="cameraTestForm">
+                    <!-- Kamera objekt kommer att genereras dynamiskt här -->
+                    <p>Laddar kamera test formulär...</p>
+                </form>
+            </div>
+            
+            <!-- Rapport Sektion -->
+            <div class="report-section" id="reportSection">
+                <h2>Testrapport</h2>
+                <div class="report-content" id="reportContent">
+                    <!-- Rapportinnehåll kommer att genereras här -->
+                </div>
+                <button id="downloadReportButton" class="download-button">
+                    <i class="fas fa-download"></i> Ladda ner Rapport
+                </button>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="decorative-line"></div>
+            <p>&copy; 2024 FUNKA AVTAL</p>
+        </footer>
+    </div>
+
+    <!-- Bekräftelse Modal -->
+    <div id="confirmationModal" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
+        <div class="modal-content">
+            <h2 id="modalTitle">Bekräfta Rapportgenerering</h2>
+            <p id="modalDescription">Är du säker på att du vill generera rapporten?</p>
+            <div class="modal-buttons">
+                <button id="confirmGenerate" class="btn" style="background-color: var(--secondary-color); color: var(--text-color);">
+                    <i class="fas fa-check"></i> Ja
+                </button>
+                <button id="cancelGenerate" class="btn" style="background-color: #6b7280; color: #ffffff;">
+                    <i class="fas fa-times"></i> Nej
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Laddningsindikator -->
+    <div id="loadingIndicator">
+        <p>Laddar...</p>
+    </div>
+
+    <!-- jsPDF och html2canvas Bibliotek -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- JavaScript -->
+    <script src="site.js"></script>
+</body>
+</html>
