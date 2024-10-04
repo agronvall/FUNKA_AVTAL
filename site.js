@@ -4,9 +4,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const reportSection = document.getElementById('reportSection');
     const reportContent = document.getElementById('reportContent');
     const confirmationModal = document.getElementById('confirmationModal');
-    const confirmGenerateButton = document.getElementById('confirmGenerate');
-    const cancelGenerateButton = document.getElementById('cancelGenerate');
+    const confirmActionButton = document.getElementById('confirmAction');
+    const cancelActionButton = document.getElementById('cancelAction');
     const downloadReportButton = document.getElementById('downloadReportButton');
+    const emailReportButton = document.getElementById('emailReportButton');
     const loadingIndicator = document.getElementById('loadingIndicator');
 
     // Funktion för att hämta URL-parametrar
@@ -193,7 +194,14 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.addEventListener('click', function() {
             // Visa bekräftelse modal innan rapport genereras
             confirmationModal.style.display = 'flex';
-            confirmGenerateButton.focus(); // Set focus to "Ja" button
+            confirmActionButton.focus(); // Set focus to "Ja" button
+
+            // Temporärt ändra modal innehåll för rapportgenerering
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+
+            modalTitle.textContent = 'Bekräfta Rapportgenerering';
+            modalDescription.textContent = 'Är du säker på att du vill generera rapporten?';
         });
     }
 
@@ -253,132 +261,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Visa Rapport
         reportContent.innerHTML = reportHTML;
         reportSection.style.display = 'block';
-
-        // Skapa Email-knapp om det finns "fungerar inte" enheter
-        const malfunctioningDevices = getMalfunctioningDevices(siteData, siteName);
-        if (malfunctioningDevices.length > 0) {
-            createEmailButton(malfunctioningDevices);
-        }
     }
 
-    // Funktion för att skapa Email-knapp
-    function createEmailButton(devices) {
-        // Kontrollera om knappen redan finns
-        if (document.getElementById('emailReportButton')) return;
+    // Funktion för att skapa Email-knapp (ändrad för att använda mailto:)
+    function sendEmailReport() {
+        const reportText = reportContent.textContent || reportContent.innerText;
+        const subject = encodeURIComponent(`Testrapport för Site: ${siteName}`);
+        const body = encodeURIComponent(reportText);
 
-        const emailButton = document.createElement('button');
-        emailButton.id = 'emailReportButton';
-        emailButton.classList.add('btn', 'email-button');
-        emailButton.textContent = 'Skicka Rapport via E-post';
-        emailButton.style.backgroundColor = '#4CAF50'; // Grön färg
-        emailButton.style.marginTop = '20px';
-        emailButton.innerHTML = '<i class="fas fa-envelope"></i> Skicka Rapport via E-post';
+        // Skapa mailto URL
+        const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
 
-        // Lägg till knappen i rapport sektionen
-        reportSection.appendChild(emailButton);
-
-        // Event Listener för Email-knappen
-        emailButton.addEventListener('click', function() {
-            const malfunctioningDevices = getMalfunctioningDevices(siteData, siteName);
-            sendEmailReport(malfunctioningDevices);
-        });
-    }
-
-    // Funktion för att hämta alla "fungerar inte" enheter
-    function getMalfunctioningDevices(siteData, siteName) {
-        const cameras = siteData[siteName].hardware;
-        const malfunctioning = [];
-
-        cameras.forEach((camera, index) => {
-            const testResult = siteData[siteName].testing[index];
-            if (testResult && testResult.fungerarInte) {
-                malfunctioning.push({
-                    camera: camera,
-                    site: siteName,
-                    comments: testResult.comments || 'Ingen kommentar.'
-                });
-            }
-        });
-
-        return malfunctioning;
-    }
-
-    // Funktion för att skicka rapport via e-post
-    async function sendEmailReport(devices) {
-        if (devices.length === 0) {
-            alert('Det finns inga enheter som kräver service.');
-            return;
-        }
-
-        // Ändra modal innehåll för e-postbekräftelse
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
-
-        modalTitle.textContent = 'Bekräfta E-postsändning';
-        modalDescription.textContent = 'Är du säker på att du vill skicka rapporten via e-post till stakeholders?';
-
-        // Visa bekräftelse modal
-        confirmationModal.style.display = 'flex';
-        confirmGenerateButton.focus(); // Sätt fokus till "Ja" knappen
-
-        // Temporärt ändra event listener för bekräfta knappen till e-postsändning
-        const originalOnClick = confirmGenerateButton.onclick;
-
-        confirmGenerateButton.onclick = async function() {
-            confirmationModal.style.display = 'none';
-            loadingIndicator.style.display = 'flex';
-
-            // Skapa en snyggt formaterad rapport
-            const formattedReport = formatReportForEmail(devices);
-
-            try {
-                const response = await fetch('http://localhost:3000/api/sendBulkServiceEmail', { // Uppdatera URL om servern körs på annan adress
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        site: siteName,
-                        devices: devices,
-                        report: formattedReport
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error('Något gick fel med e-postförfrågan.');
-                }
-
-                alert('Rapporten har skickats via e-post framgångsrikt.');
-            } catch (error) {
-                console.error('Fel vid skickande av e-post:', error);
-                alert('Det uppstod ett fel vid skickande av e-postrapporten.');
-            } finally {
-                loadingIndicator.style.display = 'none';
-            }
-
-            // Återställ modal innehåll och event listener
-            modalTitle.textContent = 'Bekräfta Rapportgenerering';
-            modalDescription.textContent = 'Är du säker på att du vill generera rapporten?';
-            confirmGenerateButton.onclick = originalOnClick;
-        };
-    }
-
-    // Funktion för att formatera rapporten för e-post
-    function formatReportForEmail(devices) {
-        let report = `<h2>Testrapport - Enheter som kräver service</h2>`;
-        report += `<p>Site: <strong>${devices[0].site}</strong></p>`;
-        report += `<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse; width: 100%;">`;
-        report += `<thead><tr><th>Kamera</th><th>Kommentarer</th></tr></thead><tbody>`;
-
-        devices.forEach(device => {
-            report += `<tr>`;
-            report += `<td>${device.camera}</td>`;
-            report += `<td>${device.comments}</td>`;
-            report += `</tr>`;
-        });
-
-        report += `</tbody></table>`;
-        return report;
+        // Öppna mailklienten
+        window.location.href = mailtoLink;
     }
 
     // Funktion för att ladda befintliga testresultat
@@ -481,34 +376,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const modalTitle = document.getElementById('modalTitle');
         const modalDescription = document.getElementById('modalDescription');
 
-        modalTitle.textContent = 'Bekräfta Rapportgenerering';
-        modalDescription.textContent = 'Är du säker på att du vill generera rapporten?';
+        modalTitle.textContent = 'Bekräfta Åtgärd';
+        modalDescription.textContent = 'Är du säker på att du vill utföra denna åtgärd?';
 
         // Återställ bekräfta knappen event listener till rapportgenerering
-        confirmGenerateButton.onclick = async function() {
-            await generateReport(siteData, siteName);
-            confirmationModal.style.display = 'none';
+        confirmActionButton.onclick = async function() {
+            const currentAction = confirmActionButton.getAttribute('data-action');
+            if (currentAction === 'generateReport') {
+                await generateReport(siteData, siteName);
+                confirmationModal.style.display = 'none';
+            } else if (currentAction === 'sendEmail') {
+                sendEmailReport();
+                confirmationModal.style.display = 'none';
+            }
         };
     }
 
-    // Event Listener för Bekräfta Generera Knapp
-    if (confirmGenerateButton) {
-        confirmGenerateButton.addEventListener('click', async function() {
-            // Determine current modal context
+    // Event Listener för Bekräfta Åtgärd Knapp
+    if (confirmActionButton) {
+        confirmActionButton.addEventListener('click', async function() {
             const modalTitle = document.getElementById('modalTitle');
             if (modalTitle.textContent === 'Bekräfta Rapportgenerering') {
+                confirmActionButton.setAttribute('data-action', 'generateReport');
                 await generateReport(siteData, siteName);
                 confirmationModal.style.display = 'none';
             } else if (modalTitle.textContent === 'Bekräfta E-postsändning') {
-                // This case is handled within sendEmailReport to avoid duplication
-                // So you might not need to handle it here
+                confirmActionButton.setAttribute('data-action', 'sendEmail');
+                sendEmailReport();
+                confirmationModal.style.display = 'none';
             }
         });
     }
 
-    // Event Listener för Avbryt Generera Knapp
-    if (cancelGenerateButton) {
-        cancelGenerateButton.addEventListener('click', closeConfirmationModal);
+    // Event Listener för Avbryt Åtgärd Knapp
+    if (cancelActionButton) {
+        cancelActionButton.addEventListener('click', closeConfirmationModal);
     }
 
     // Event Listener för Ladda Ner Rapport Knapp
@@ -516,6 +418,22 @@ document.addEventListener('DOMContentLoaded', function() {
         downloadReportButton.addEventListener('click', downloadReportAsPDF);
         // Om du föredrar att ladda ner som TXT kan du lägga till en annan knapp eller ändra denna rad
         // downloadReportButton.addEventListener('click', downloadReportAsTXT);
+    }
+
+    // Event Listener för Skicka Rapport via E-post Knapp
+    if (emailReportButton) {
+        emailReportButton.addEventListener('click', function() {
+            // Visa bekräftelse modal innan email skickas
+            confirmationModal.style.display = 'flex';
+            confirmActionButton.focus(); // Set focus to "Ja" button
+
+            // Ändra modal innehåll för e-postbekräftelse
+            const modalTitle = document.getElementById('modalTitle');
+            const modalDescription = document.getElementById('modalDescription');
+
+            modalTitle.textContent = 'Bekräfta E-postsändning';
+            modalDescription.textContent = 'Är du säker på att du vill skicka rapporten via E-post?';
+        });
     }
 
     // Funktion för att initiera formuläret och ladda befintlig data
