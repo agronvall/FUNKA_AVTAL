@@ -1,332 +1,315 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUNKA AVTAL - AVPROVNING CCTV</title>
+    <title>Funka Avtal - Site Detaljer</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Embedded CSS -->
     <style>
-        /* CSS Variables for Themes */
         :root {
-            --primary-color: #002147;
-            --accent-color: #FF0000;
-            --secondary-color: #FFFFFF;
-            --background-color: #F0F4F8;
-            --card-background: #FFFFFF;
-            --text-color: #2D3748;
-            --header-footer-bg: #002147;
-            --button-hover-bg: #001E5B;
-            --font-family: 'Poppins', sans-serif;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --primary-color: #1E3A8A; /* Indigo */
+            --secondary-color: #FFFFFF; /* White */
+            --accent-color: #F59E0B;  /* Amber */
+            --background-color: #F3F4F6; /* Gray */
+            --text-color: #1F2937; /* Dark Gray */
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition-speed: 0.3s;
-        }
-
-        /* Global Styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --font-family: 'Inter', sans-serif;
         }
 
         body {
             font-family: var(--font-family);
             background-color: var(--background-color);
             color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
+            margin: 0;
         }
 
         .container {
-            background-color: var(--card-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            width: 100%;
-            max-width: 900px;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            transition: background-color var(--transition-speed) ease;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
 
-        header, footer {
+        header {
             text-align: center;
-            padding: 20px 0;
-        }
-
-        header h1, footer p {
-            color: var(--primary-color);
+            margin-bottom: 40px;
         }
 
         header h1 {
-            font-size: 2em;
-            font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
+            color: var(--primary-color);
         }
 
-        header h2 {
-            font-size: 1.2em;
-            font-weight: 400;
-            color: var(--text-color);
-            margin-top: 0;
+        .decorative-line {
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            margin: 20px auto;
+            border-radius: var(--border-radius);
         }
 
-        footer p {
-            font-size: 0.9em;
-            color: var(--text-color);
-            margin-top: 10px;
+        .site-header {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
         }
 
-        main {
+        .hardware-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 30px;
+        }
+
+        .hardware-item {
+            background-color: var(--secondary-color);
+            border: 1px solid #E5E7EB;
+            border-radius: var(--border-radius);
+            padding: 15px 20px;
+            margin-bottom: 15px;
             display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .btn {
+        .remove-button {
+            background-color: #EF4444;
+            color: var(--secondary-color);
+            border: none;
+            padding: 8px 12px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color var(--transition-speed) ease;
+        }
+
+        .remove-button:hover {
+            background-color: #DC2626;
+        }
+
+        .add-hardware-button {
             background-color: var(--primary-color);
             color: var(--secondary-color);
             border: none;
             padding: 12px 20px;
-            font-size: 1em;
-            font-weight: 600;
             border-radius: var(--border-radius);
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
             transition: background-color var(--transition-speed) ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
+            margin-bottom: 30px;
         }
 
-        .btn:hover {
-            background-color: var(--button-hover-bg);
-        }
-
-        .back-button {
-            align-self: flex-start;
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            border: 1px solid var(--primary-color);
-        }
-
-        .site-details {
-            width: 100%;
-        }
-
-        .site-header {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-        }
-
-        .hardware-list {
-            list-style-type: none;
-            padding-left: 0;
-            color: var(--text-color);
-            font-size: 1em;
-        }
-
-        .hardware-item {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .hardware-item span {
-            flex-grow: 1;
-        }
-
-        .remove-button {
-            background-color: #e53e3e;
-            color: #ffffff;
-            border: none;
-            padding: 5px 10px;
-            font-size: 0.9em;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color var(--transition-speed) ease;
-            margin-left: 10px;
-        }
-
-        .remove-button:hover {
-            background-color: #c53030;
-        }
-
-        .camera-form {
-            width: 100%;
-            padding: 20px;
-            background-color: var(--card-background);
-            border-radius: 10px;
-            box-shadow: var(--box-shadow);
-        }
-
-        .camera-form h2 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
-            font-size: 1.5em;
+        .add-hardware-button:hover {
+            background-color: #1A2E66;
         }
 
         .camera-item {
-            margin-bottom: 25px;
-            padding: 15px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            transition: background-color var(--transition-speed) ease;
-        }
-
-        .camera-item.red-background {
-            background-color: #ffe5e5; /* Light red background */
+            background-color: var(--secondary-color);
+            border: 1px solid #E5E7EB;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            break-inside: avoid; /* Prevents the item from breaking across pages in PDF */
         }
 
         .camera-item h3 {
             margin-bottom: 15px;
+            font-size: 1.25rem;
             color: var(--primary-color);
-            font-size: 1.2em;
         }
 
         .test-item {
-            display: flex;
-            align-items: center;
             margin-bottom: 10px;
         }
 
         .test-item label {
             margin-left: 8px;
-            font-size: 0.95em;
-        }
-
-        .test-item input[type="checkbox"],
-        .test-item input[type="radio"] {
-            transform: scale(1.2);
+            font-size: 0.95rem;
         }
 
         .comment-section {
             margin-top: 15px;
         }
 
+        .comment-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
         .comment-section textarea {
             width: 100%;
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #e2e8f0;
-            resize: vertical;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            border: 1px solid #E5E7EB;
             font-family: var(--font-family);
-            font-size: 1em;
+            font-size: 0.95rem;
         }
 
         .submit-button {
             background-color: var(--accent-color);
             color: var(--secondary-color);
-            align-self: flex-end;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color var(--transition-speed) ease;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+        }
+
+        .submit-button:hover {
+            background-color: #D97706;
         }
 
         .report-section {
-            width: 100%;
-            padding: 20px;
-            background-color: var(--card-background);
-            border-radius: 10px;
-            box-shadow: var(--box-shadow);
+            display: none;
+            margin-top: 40px;
         }
 
-        .report-section h2 {
+        .report-section h3 {
             margin-bottom: 20px;
+            font-size: 1.5rem;
             color: var(--primary-color);
-            font-size: 1.5em;
+            text-align: center;
         }
 
         .report-content {
-            white-space: pre-wrap;
-            color: var(--text-color);
-            font-size: 1em;
-            padding: 10px;
-            background-color: #f7fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 5px;
-            max-height: 300px;
-            overflow-y: auto;
+            background-color: var(--secondary-color);
+            border: 1px solid #E5E7EB;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            font-size: 0.95rem;
+            line-height: 1.6;
         }
 
-        .download-button, .email-button {
+        .report-buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .report-buttons .btn {
             background-color: var(--primary-color);
             color: var(--secondary-color);
-            margin-top: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .email-input-section {
-            width: 100%;
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .email-input-section label {
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
             font-weight: 600;
+            transition: background-color var(--transition-speed) ease;
+            margin: 0 10px;
         }
 
-        .email-input-section input {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #e2e8f0;
-            font-size: 1em;
+        .report-buttons .btn:hover {
+            background-color: #1A2E66;
         }
 
         .notification {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: var(--primary-color);
+            background-color: var(--accent-color);
             color: var(--secondary-color);
             padding: 15px 20px;
             border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
             display: none;
-            align-items: center;
-            gap: 10px;
-            z-index: 1000;
+            font-size: 0.95rem;
+            box-shadow: var(--box-shadow);
         }
 
         .notification.show {
-            display: flex;
+            display: block;
         }
 
-        /* Responsive Design */
+        .red-background {
+            background-color: #FEE2E2 !important;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .close-button {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 10px;
+            border-radius: var(--border-radius);
+            border: 1px solid #E5E7EB;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        .modal-button {
+            background-color: var(--accent-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color var(--transition-speed) ease;
+            width: 100%;
+        }
+
+        .modal-button:hover {
+            background-color: #D97706;
+        }
+
         @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-
-            header h1, .site-header, .camera-form h2, .report-section h2 {
-                font-size: 1.4em;
-            }
-
-            .btn, .back-button, .submit-button, .download-button, .email-button {
-                padding: 10px 16px;
-                font-size: 0.9em;
-            }
-
             .hardware-item {
                 flex-direction: column;
                 align-items: flex-start;
             }
 
             .remove-button {
-                margin-left: 0;
-                margin-top: 5px;
+                margin-top: 10px;
             }
         }
     </style>
@@ -334,71 +317,58 @@
 <body>
     <div class="container">
         <header>
-            <h1>Sitespecifika Detaljer</h1>
-            <h2>CCTV</h2>
+            <h1>Funka Avtal - Avprovning</h1>
+            <div class="decorative-line"></div>
         </header>
-        
-        <main>
-            <!-- Back Button -->
-            <button class="back-button" onclick="window.history.back()">
-                <i class="fas fa-arrow-left"></i> Tillbaka
-            </button>
-            
-            <!-- Site Details -->
-            <div id="siteDetails" class="site-details">
-                <!-- Site details will be dynamically loaded here -->
+
+        <!-- Site Details -->
+        <div id="siteDetails">
+            <!-- Site details will be loaded here -->
+        </div>
+
+        <!-- Add Hardware Button -->
+        <button id="addHardwareButton" class="add-hardware-button"><i class="fas fa-plus"></i> Lägg till Hårdvara</button>
+
+        <!-- Camera Test Form -->
+        <form id="cameraTestForm">
+            <!-- Camera test items will be loaded here -->
+        </form>
+
+        <!-- Submit Button -->
+        <button type="button" class="submit-button">Generera Rapport</button>
+
+        <!-- Report Section -->
+        <div id="reportSection" class="report-section">
+            <h3>Testrapport</h3>
+            <div id="reportContent" class="report-content">
+                <!-- Report content will be loaded here -->
             </div>
-            
-            <!-- Kamera Test Form -->
-            <div class="camera-form">
-                <h2>Testa Kameror</h2>
-                <form id="cameraTestForm">
-                    <!-- Kamera objekt kommer att genereras dynamiskt här -->
-                    <p>Laddar kamera test formulär...</p>
-                </form>
-                <!-- Create Submit Button -->
-                <button type="button" class="btn submit-button">
-                    <i class="fas fa-file-alt"></i> Generera Rapport
-                </button>
+            <div class="report-buttons">
+                <button id="downloadReportButton" class="btn"><i class="fas fa-file-pdf"></i> Ladda ner Rapport</button>
+                <button id="emailReportButton" class="btn"><i class="fas fa-envelope"></i> Skicka Rapport via E-post</button>
             </div>
-            
-            <!-- Rapport Sektion -->
-            <div class="report-section" id="reportSection" style="display: none;">
-                <h2>Testrapport</h2>
-                <div class="report-content" id="reportContent">
-                    <!-- Rapportinnehåll kommer att genereras här -->
-                </div>
-                
-                <!-- E-postadress Inmatningsfält -->
-                <div class="email-input-section">
-                    <label for="userEmail">Din E-postadress:</label>
-                    <input type="email" id="userEmail" placeholder="Ange din e-postadress">
-                </div>
-                
-                <button id="downloadReportButton" class="btn download-button">
-                    <i class="fas fa-download"></i> Ladda ner Rapport
-                </button>
-                <button id="emailReportButton" class="btn email-button">
-                    <i class="fas fa-envelope"></i> Skicka Rapport via E-post
-                </button>
+        </div>
+
+        <!-- Notification -->
+        <div id="notification" class="notification">
+            <p id="notificationMessage"></p>
+        </div>
+
+        <!-- Add Hardware Modal -->
+        <div id="addHardwareModal" class="modal">
+            <div class="modal-content">
+                <button class="close-button">&times;</button>
+                <h3>Lägg till Hårdvara</h3>
+                <input type="text" id="newHardwareName" class="modal-input" placeholder="Hårdvarunamn">
+                <button id="saveHardwareButton" class="modal-button">Spara</button>
             </div>
-        </main>
-        
-        <footer>
-            <p>&copy; 2024 FUNKA AVTAL</p>
-        </footer>
+        </div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="notification">
-        <i class="fas fa-check-circle"></i>
-        <span id="notificationMessage">Action completed successfully!</span>
-    </div>
-
-    <!-- jsPDF and html2canvas Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- JavaScript -->
+    <!-- JavaScript Libraries -->
+    <!-- Include html2pdf.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+    <!-- Your JavaScript file -->
     <script src="site.js"></script>
 </body>
 </html>

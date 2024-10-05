@@ -1,6 +1,6 @@
 // app.js
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const siteListContainer = document.getElementById('siteList');
     const toggleButton = document.getElementById('toggleDarkMode');
     const exportButton = document.getElementById('exportButton');
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
         siteListContainer.innerHTML = ''; // Clear existing list
 
         if (sites.length === 0) {
-            siteListContainer.innerHTML = '<p>No sites available.</p>';
+            siteListContainer.innerHTML = '<p>Inga siter tillgängliga.</p>';
             return;
         }
 
@@ -24,16 +24,14 @@ document.addEventListener('DOMContentLoaded', function() {
             siteItem.classList.add('site-item');
             siteItem.dataset.site = site;
 
-            const siteName = document.createElement('span');
-            siteName.classList.add('site-name');
+            const siteName = document.createElement('h3');
             siteName.textContent = site;
 
-            const arrow = document.createElement('span');
-            arrow.classList.add('arrow');
-            arrow.innerHTML = '&#8594;'; // Right arrow
+            const siteInfo = document.createElement('p');
+            siteInfo.textContent = siteData[site].description || 'Ingen beskrivning tillgänglig.';
 
             siteItem.appendChild(siteName);
-            siteItem.appendChild(arrow);
+            siteItem.appendChild(siteInfo);
 
             // Add click event to navigate to site.html with site parameter
             siteItem.addEventListener('click', () => {
@@ -48,22 +46,19 @@ document.addEventListener('DOMContentLoaded', function() {
     function handleFileSelect(event) {
         const file = event.target.files[0];
         if (!file) {
-            alert('No file selected.');
+            alert('Ingen fil vald.');
             return;
         }
 
         // Check file extension
         const fileExtension = file.name.split('.').pop().toLowerCase();
         if (fileExtension !== 'json') {
-            alert('Please select a valid JSON file.');
+            alert('Vänligen välj en giltig JSON-fil.');
             return;
         }
 
-        console.log(`Selected file: ${file.name}`); // Debugging line
-
         const reader = new FileReader();
-        reader.onload = function(e) {
-            console.log('File content:', e.target.result); // Debugging line
+        reader.onload = function (e) {
             try {
                 const data = JSON.parse(e.target.result);
                 siteData = data;
@@ -71,43 +66,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem('siteData', JSON.stringify(siteData));
                 // Display site list
                 displaySiteList(siteData);
-                alert('Site data loaded successfully!');
-
-                // **Debugging: Display JSON content on the page**
-                displayJsonContent(e.target.result);
+                alert('Site data laddad framgångsrikt!');
             } catch (error) {
                 console.error('Error parsing JSON:', error);
-                alert('Error: Invalid JSON file.');
-                siteListContainer.innerHTML = '<p>Error parsing JSON file.</p>';
+                alert('Fel: Ogiltig JSON-fil.');
+                siteListContainer.innerHTML = '<p>Fel vid tolkning av JSON-filen.</p>';
             }
         };
 
-        reader.onerror = function() {
+        reader.onerror = function () {
             console.error('Error reading file.');
-            alert('Error reading file.');
-            siteListContainer.innerHTML = '<p>Error reading file.</p>';
+            alert('Fel vid läsning av filen.');
+            siteListContainer.innerHTML = '<p>Fel vid läsning av filen.</p>';
         };
 
         reader.readAsText(file);
     }
 
-    // **New Function: Display JSON content for debugging**
-    function displayJsonContent(content) {
-        const debugDiv = document.createElement('div');
-        debugDiv.style.marginTop = '25px';
-        debugDiv.style.padding = '15px';
-        debugDiv.style.backgroundColor = '#E2E8F0'; /* Light grey-blue background */
-        debugDiv.style.borderRadius = '6px';
-        debugDiv.style.overflowX = 'auto';
-        debugDiv.style.width = '100%';
-        debugDiv.innerHTML = `<h3 style="margin-bottom: 10px;">Loaded JSON Content:</h3><pre style="font-size: 0.95em; line-height: 1.4;">${content}</pre>`;
-        siteListContainer.appendChild(debugDiv);
-    }
-
     // Function to export the current siteData as JSON
     function exportSiteData() {
         if (Object.keys(siteData).length === 0) {
-            alert('No site data to export.');
+            alert('Ingen site data att exportera.');
             return;
         }
 
@@ -136,12 +115,9 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             siteData = JSON.parse(storedData);
             displaySiteList(siteData);
-
-            // **Debugging: Display stored JSON content on the page**
-            displayJsonContent(storedData);
         } catch (error) {
             console.error('Error parsing stored JSON:', error);
-            siteListContainer.innerHTML = '<p>Error loading stored site data.</p>';
+            siteListContainer.innerHTML = '<p>Fel vid laddning av sparad site data.</p>';
         }
     }
 
@@ -149,6 +125,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (toggleButton) {
         toggleButton.addEventListener('click', () => {
             body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                toggleButton.innerHTML = '<i class="fas fa-sun"></i> Ljust Läge';
+            } else {
+                toggleButton.innerHTML = '<i class="fas fa-moon"></i> Mörkt Läge';
+            }
         });
     }
 });

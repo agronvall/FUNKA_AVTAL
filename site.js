@@ -1,14 +1,20 @@
-document.addEventListener('DOMContentLoaded', function() {
+// site.js
+
+document.addEventListener('DOMContentLoaded', function () {
     const siteDetailsContainer = document.getElementById('siteDetails');
     const cameraTestForm = document.getElementById('cameraTestForm');
     const reportSection = document.getElementById('reportSection');
     const reportContent = document.getElementById('reportContent');
     const downloadReportButton = document.getElementById('downloadReportButton');
     const emailReportButton = document.getElementById('emailReportButton');
-    const userEmailInput = document.getElementById('userEmail');
     const submitButton = document.querySelector('.submit-button');
     const notification = document.getElementById('notification');
     const notificationMessage = document.getElementById('notificationMessage');
+    const addHardwareButton = document.getElementById('addHardwareButton');
+    const addHardwareModal = document.getElementById('addHardwareModal');
+    const closeModalButton = document.querySelector('.close-button');
+    const saveHardwareButton = document.getElementById('saveHardwareButton');
+    const newHardwareNameInput = document.getElementById('newHardwareName');
 
     // Function to show notification
     function showNotification(message) {
@@ -66,13 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const hardwareList = document.createElement('ul');
         hardwareList.classList.add('hardware-list');
 
-        if (site.hardware && Array.isArray(site.hardware)) {
+        if (site.hardware && Array.isArray(site.hardware) && site.hardware.length > 0) {
             site.hardware.forEach((camera, index) => {
                 const listItem = document.createElement('li');
                 listItem.classList.add('hardware-item');
 
                 const cameraName = document.createElement('span');
-                cameraName.textContent = camera.hardware_name || 'Ingen namn angiven';
+                cameraName.textContent = camera.hardware_name || `Kamera ${index + 1}`;
 
                 const removeBtn = document.createElement('button');
                 removeBtn.classList.add('remove-button');
@@ -103,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Function to generate Camera Test Form
     function generateCameraTestForm(siteData, siteName) {
-        if (!siteData[siteName] || !siteData[siteName].hardware) {
+        if (!siteData[siteName] || !siteData[siteName].hardware || siteData[siteName].hardware.length === 0) {
             cameraTestForm.innerHTML = '<p>Ingen kameradata tillgänglig för test.</p>';
             return;
         }
@@ -155,13 +161,13 @@ document.addEventListener('DOMContentLoaded', function() {
             cameraDiv.appendChild(functionalityDiv);
 
             // Event listeners to change background color
-            fungerarRadio.addEventListener('change', function() {
+            fungerarRadio.addEventListener('change', function () {
                 if (fungerarRadio.checked) {
                     cameraDiv.classList.remove('red-background');
                 }
             });
 
-            fungerarInteRadio.addEventListener('change', function() {
+            fungerarInteRadio.addEventListener('change', function () {
                 if (fungerarInteRadio.checked) {
                     cameraDiv.classList.add('red-background');
                 }
@@ -318,32 +324,34 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Function to download report as PDF
-    async function downloadReportAsPDF() {
-        try {
-            const canvas = await html2canvas(reportSection, { scale: 2 });
+    // Function to download report as PDF using html2pdf.js
+    function downloadReportAsPDF() {
+        const reportElement = document.getElementById('reportContent');
 
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        const options = {
+            margin:       [10, 10, 10, 10], // top, left, bottom, right
+            filename:     `Testrapport_${siteName}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // Use 'avoid-all' to prevent breaking inside elements
+        };
 
-            pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
-            pdf.save(`Testrapport_${siteName}.pdf`);
-
-            showNotification('PDF nedladdad!');
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            alert('Det uppstod ett fel vid generering av PDF-rapporten.');
-        }
+        html2pdf().set(options).from(reportElement).save()
+            .then(() => {
+                showNotification('PDF nedladdad!');
+            })
+            .catch((error) => {
+                console.error('Error generating PDF:', error);
+                alert('Det uppstod ett fel vid generering av PDF-rapporten.');
+            });
     }
 
     // Function to send email report via mailto:
     function sendEmailReport() {
-        const userEmail = userEmailInput.value.trim();
+        const userEmail = prompt('Ange din e-postadress:');
         if (!userEmail) {
-            alert('Vänligen ange din e-postadress.');
+            alert('E-postadress krävs för att skicka rapporten.');
             return;
         }
 
@@ -375,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event Listener for Submit Button
-    submitButton.addEventListener('click', function() {
+    submitButton.addEventListener('click', function () {
         generateReport(siteData, siteName);
     });
 
@@ -419,7 +427,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Event Delegation for Remove Buttons
-    siteDetailsContainer.addEventListener('click', function(event) {
+    siteDetailsContainer.addEventListener('click', function (event) {
         if (event.target && event.target.classList.contains('remove-button')) {
             const index = parseInt(event.target.dataset.index, 10);
             if (isNaN(index)) {
@@ -431,5 +439,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 handleRemoveCamera(index);
             }
         }
+    });
+
+    // Add Hardware Modal Functionality
+    addHardwareButton.addEventListener('click', function () {
+        addHardwareModal.style.display = 'block';
+    });
+
+    closeModalButton.addEventListener('click', function () {
+        addHardwareModal.style.display = 'none';
+        newHardwareNameInput.value = '';
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target == addHardwareModal) {
+            addHardwareModal.style.display = 'none';
+            newHardwareNameInput.value = '';
+        }
+    });
+
+    saveHardwareButton.addEventListener('click', function () {
+        const newHardwareName = newHardwareNameInput.value.trim();
+        if (!newHardwareName) {
+            alert('Vänligen ange ett namn för hårdvaran.');
+            return;
+        }
+
+        if (!siteData[siteName].hardware) {
+            siteData[siteName].hardware = [];
+        }
+
+        siteData[siteName].hardware.push({ hardware_name: newHardwareName });
+
+        localStorage.setItem('siteData', JSON.stringify(siteData));
+
+        displaySiteDetails(siteData, siteName);
+        generateCameraTestForm(siteData, siteName);
+        loadExistingTestResults(siteData, siteName);
+
+        addHardwareModal.style.display = 'none';
+        newHardwareNameInput.value = '';
+
+        showNotification('Hårdvara tillagd!');
     });
 });

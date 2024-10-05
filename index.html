@@ -2,347 +2,197 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUNKA AVTAL - AVPROVNING</title>
+    <title>Funka Avtal - Avprovning</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for Icons (Optional) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Embedded CSS -->
     <style>
-        /* CSS Variables for Theming */
         :root {
-            --primary-color: #003366; /* Darker Blue */
-            --accent-color: #FF1F1F;  /* Redder Red */
+            --primary-color: #1E3A8A; /* Indigo */
             --secondary-color: #FFFFFF; /* White */
-            --background-color: #F5F7FA; /* Slightly Off-White */
-            --card-background: #FFFFFF; /* White */
-            --text-color: #2D3748; /* Dark Text */
-            --header-footer-bg: #003366; /* Primary Color */
-            --button-hover-bg: #00264D; /* Darker Blue for Hover */
-            --font-family: 'Poppins', sans-serif;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --accent-color: #F59E0B;  /* Amber */
+            --background-color: #F3F4F6; /* Gray */
+            --text-color: #1F2937; /* Dark Gray */
+            --border-radius: 10px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --transition-speed: 0.3s;
-        }
-
-        /* Dark Mode Variables */
-        :root.dark-mode {
-            --primary-color: #001F3F; /* Even Darker Blue */
-            --accent-color: #FF4C4C;  /* Slightly Softer Red */
-            --secondary-color: #F5F7FA; /* Light Text */
-            --background-color: #1A202C; /* Dark Background */
-            --card-background: #2D3748; /* Dark Card */
-            --text-color: #F5F7FA; /* Light Text */
-            --header-footer-bg: #001F3F; /* Darker Blue */
-            --button-hover-bg: #00122E; /* Darker Blue */
-        }
-
-        /* Global Styles */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            --font-family: 'Inter', sans-serif;
         }
 
         body {
             font-family: var(--font-family);
             background-color: var(--background-color);
             color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+            margin: 0;
         }
 
         .container {
-            background-color: var(--card-background);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            width: 90%;
-            max-width: 800px;
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-top: 6px solid var(--accent-color);
-            transition: background-color var(--transition-speed) ease, border-top var(--transition-speed) ease;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
 
-        header, footer {
+        header {
             text-align: center;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--accent-color);
+            margin-bottom: 40px;
         }
 
         header h1 {
-            font-size: 2.5em;
-            font-weight: 700;
-            color: var(--text-color);
-            letter-spacing: 1px;
-            margin-bottom: 10px;
+            font-size: 2.5rem;
+            color: var(--primary-color);
         }
 
         header h2 {
-            font-size: 1.2em;
-            font-weight: 400;
+            font-size: 1.25rem;
             color: var(--text-color);
-            margin-top: 0;
-        }
-
-        footer {
-            border-top: 1px solid var(--accent-color);
-            border-bottom: none;
-        }
-
-        footer p {
-            font-size: 1em;
-            color: var(--secondary-color);
             margin-top: 10px;
         }
 
-        main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 30px;
-            padding: 30px 0;
-            width: 100%;
-        }
-
-        .btn, .file-label, .export-button {
-            font-family: var(--font-family);
-        }
-
-        .btn {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            border: none;
-            padding: 16px 32px;
-            font-size: 1.1em;
-            font-weight: 600;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: background-color var(--transition-speed) ease, transform 0.2s ease, box-shadow var(--transition-speed) ease;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn:hover {
-            background-color: var(--button-hover-bg);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn:active {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-        }
-
-        #toggleDarkMode {
-            background-color: var(--accent-color);
-            color: var(--secondary-color);
-        }
-
-        #toggleDarkMode:hover {
-            background-color: #E60000; /* Slightly Darker Red */
-        }
-
-        .output {
-            font-size: 1.3em;
-            color: var(--accent-color);
-            min-height: 24px;
-            transition: opacity var(--transition-speed) ease;
-            opacity: 0;
-        }
-
-        .output.visible {
-            opacity: 1;
-        }
-
-        /* Decorative Red Lines */
         .decorative-line {
-            width: 100%;
-            height: 3px;
+            width: 60px;
+            height: 4px;
             background-color: var(--accent-color);
-            margin: 15px 0;
-            border-radius: 2px;
+            margin: 20px auto;
+            border-radius: var(--border-radius);
         }
 
-        /* Site List Styles */
-        .site-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
+        .file-input-container {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        .site-item {
+        .file-label {
+            display: inline-block;
             background-color: var(--primary-color);
             color: var(--secondary-color);
-            padding: 18px 24px;
+            padding: 15px 30px;
             border-radius: var(--border-radius);
             cursor: pointer;
-            transition: background-color var(--transition-speed) ease, transform 0.2s ease, box-shadow var(--transition-speed) ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 1.1em;
-            font-weight: 500;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background-color var(--transition-speed) ease;
         }
 
-        .site-item:hover {
-            background-color: var(--button-hover-bg);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-        }
-
-        .site-name {
-            flex-grow: 1;
-        }
-
-        .arrow {
-            font-size: 1.5em;
-            margin-left: 10px;
-            transition: transform var(--transition-speed) ease;
-        }
-
-        .site-item:hover .arrow {
-            transform: translateX(5px);
-        }
-
-        /* Additional Styles for File Input */
-        .file-input-container {
-            margin-bottom: 25px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
+        .file-label:hover {
+            background-color: #1A2E66;
         }
 
         #fileInput {
             display: none;
         }
 
-        .file-label {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            padding: 16px 32px;
-            font-size: 1.1em;
-            font-weight: 600;
+        .site-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .site-item {
+            background-color: var(--secondary-color);
+            border: 1px solid #E5E7EB;
             border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: background-color var(--transition-speed) ease, transform 0.2s ease, box-shadow var(--transition-speed) ease;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-            display: inline-block;
+            padding: 20px;
+            width: calc(33.333% - 40px);
+            box-sizing: border-box;
             text-align: center;
+            cursor: pointer;
+            transition: box-shadow var(--transition-speed) ease;
         }
 
-        .file-label:hover {
-            background-color: var(--button-hover-bg);
-            transform: translateY(-4px);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+        .site-item:hover {
+            box-shadow: var(--box-shadow);
         }
 
-        .file-label:active {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+        .site-item h3 {
+            margin-bottom: 10px;
+            font-size: 1.25rem;
+            color: var(--primary-color);
         }
 
-        /* Export Button Styles */
-        .export-button {
+        .site-item p {
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .btn-group {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn {
             background-color: var(--accent-color);
             color: var(--secondary-color);
+            padding: 12px 25px;
             border: none;
-            padding: 12px 28px;
-            font-size: 1.1em;
-            font-weight: 600;
             border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color var(--transition-speed) ease, transform 0.2s ease, box-shadow var(--transition-speed) ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-top: 25px;
-            align-self: flex-start;
+            margin: 0 10px;
+            transition: background-color var(--transition-speed) ease;
         }
 
-        .export-button:hover {
-            background-color: #E60000; /* Slightly Darker Red */
-            transform: translateY(-3px);
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+        .btn:hover {
+            background-color: #D97706;
         }
 
-        .export-button:active {
-            transform: translateY(-1px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            color: var(--text-color);
         }
 
-        /* Responsive Design */
-        @media (max-width: 600px) {
-            .container {
-                padding: 30px;
+        footer p {
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .site-item {
+                width: calc(50% - 40px);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .site-item {
+                width: 100%;
             }
 
-            header h1 {
-                font-size: 2em;
-            }
-
-            header h2 {
-                font-size: 1em;
-            }
-
-            .btn, .file-label, .export-button {
-                padding: 14px 28px;
-                font-size: 1em;
-            }
-
-            .output {
-                font-size: 1.1em;
-            }
-
-            .site-name {
-                font-size: 1em;
-            }
-
-            .export-button {
-                margin-top: 20px;
-            }
-
-            .decorative-line {
-                height: 2px;
+            .btn {
+                margin: 10px 0;
+                width: 100%;
             }
         }
     </style>
 </head>
-<body class="light-mode">
+<body>
     <div class="container">
         <header>
-            <h1>FUNKA AVTAL - AVPROVNING</h1>
-            <h2>CCTV</h2>
+            <h1>Funka Avtal - Avprovning</h1>
+            <h2>CCTV System</h2>
             <div class="decorative-line"></div>
         </header>
-        
-        <main>
-            <!-- File Input for Uploading site_info.json -->
-            <div class="file-input-container">
-                <label for="fileInput" class="file-label">Load Site Data</label>
-                <input type="file" id="fileInput" accept=".json">
-            </div>
-            
-            <!-- Site List -->
-            <div id="siteList" class="site-list">
-                <!-- Sites will be dynamically loaded here -->
-            </div>
-            
-            <!-- Export Button -->
-            <button id="exportButton" class="export-button">Export Site Data</button>
-            
-            <!-- Dark Mode Toggle -->
-            <button id="toggleDarkMode" class="btn">Toggle Dark Mode</button>
-        </main>
-        
+
+        <div class="file-input-container">
+            <label for="fileInput" class="file-label"><i class="fas fa-upload"></i> Ladda Site Data</label>
+            <input type="file" id="fileInput" accept=".json">
+        </div>
+
+        <!-- Site List -->
+        <div id="siteList" class="site-list">
+            <!-- Sites will be loaded here -->
+        </div>
+
+        <!-- Buttons -->
+        <div class="btn-group">
+            <button id="exportButton" class="btn"><i class="fas fa-download"></i> Exportera Site Data</button>
+            <button id="toggleDarkMode" class="btn"><i class="fas fa-moon"></i> Mörkt Läge</button>
+        </div>
+
         <footer>
-            <div class="decorative-line"></div>
-            <p>&copy; 2024 FUNKA AVTAL</p>
+            <p>&copy; 2024 Funka Avtal</p>
         </footer>
     </div>
 
