@@ -3,13 +3,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const cameraTestForm = document.getElementById('cameraTestForm');
     const reportSection = document.getElementById('reportSection');
     const reportContent = document.getElementById('reportContent');
-    const confirmationModal = document.getElementById('confirmationModal');
-    const confirmActionButton = document.getElementById('confirmAction');
-    const cancelActionButton = document.getElementById('cancelAction');
     const downloadReportButton = document.getElementById('downloadReportButton');
     const emailReportButton = document.getElementById('emailReportButton');
-    const loadingIndicator = document.getElementById('loadingIndicator');
     const userEmailInput = document.getElementById('userEmail');
+    const submitButton = document.querySelector('.submit-button');
+    const notification = document.getElementById('notification');
+    const notificationMessage = document.getElementById('notificationMessage');
+
+    // Function to show notification
+    function showNotification(message) {
+        notificationMessage.textContent = message;
+        notification.classList.add('show');
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
 
     // Function to get URL parameters
     function getQueryParam(param) {
@@ -64,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 listItem.classList.add('hardware-item');
 
                 const cameraName = document.createElement('span');
-                cameraName.textContent = camera;
+                cameraName.textContent = camera.hardware_name || 'Ingen namn angiven';
 
                 const removeBtn = document.createElement('button');
                 removeBtn.classList.add('remove-button');
@@ -90,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (siteData) {
         displaySiteDetails(siteData, siteName);
     } else {
-        siteDetailsContainer.innerHTML = '<p>Ingen site data hittades. Vänligen ladda site data på huvudidan.</p>';
+        siteDetailsContainer.innerHTML = '<p>Ingen site data hittades. Vänligen ladda site data på huvudsidan.</p>';
     }
 
     // Function to generate Camera Test Form
@@ -110,26 +118,65 @@ document.addEventListener('DOMContentLoaded', function() {
             cameraDiv.classList.add('camera-item');
 
             const cameraTitle = document.createElement('h3');
-            cameraTitle.textContent = camera;
-            cameraTitle.style.color = 'var(--primary-color)';
-            cameraTitle.style.marginBottom = '10px';
+            cameraTitle.textContent = camera.hardware_name || `Kamera ${index + 1}`;
 
             cameraDiv.appendChild(cameraTitle);
 
-            // Test criteria without "Other"
+            // Functionality Radio Buttons
+            const functionalityDiv = document.createElement('div');
+            functionalityDiv.classList.add('test-item');
+
+            const fungerarRadio = document.createElement('input');
+            fungerarRadio.type = 'radio';
+            fungerarRadio.name = `functionality_${index}`;
+            fungerarRadio.value = 'Fungerar';
+            fungerarRadio.checked = true;
+            fungerarRadio.id = `functionality_${index}_fungerar`;
+
+            const fungerarLabel = document.createElement('label');
+            fungerarLabel.htmlFor = `functionality_${index}_fungerar`;
+            fungerarLabel.textContent = 'Fungerar';
+
+            const fungerarInteRadio = document.createElement('input');
+            fungerarInteRadio.type = 'radio';
+            fungerarInteRadio.name = `functionality_${index}`;
+            fungerarInteRadio.value = 'Fungerar inte';
+            fungerarInteRadio.id = `functionality_${index}_fungerarInte`;
+
+            const fungerarInteLabel = document.createElement('label');
+            fungerarInteLabel.htmlFor = `functionality_${index}_fungerarInte`;
+            fungerarInteLabel.textContent = 'Fungerar inte';
+
+            functionalityDiv.appendChild(fungerarRadio);
+            functionalityDiv.appendChild(fungerarLabel);
+            functionalityDiv.appendChild(fungerarInteRadio);
+            functionalityDiv.appendChild(fungerarInteLabel);
+
+            cameraDiv.appendChild(functionalityDiv);
+
+            // Event listeners to change background color
+            fungerarRadio.addEventListener('change', function() {
+                if (fungerarRadio.checked) {
+                    cameraDiv.classList.remove('red-background');
+                }
+            });
+
+            fungerarInteRadio.addEventListener('change', function() {
+                if (fungerarInteRadio.checked) {
+                    cameraDiv.classList.add('red-background');
+                }
+            });
+
+            // Test criteria
             const testCriteria = [
                 { label: 'Samtliga linser besiktigade', name: `samtligaLinser_${index}` },
                 { label: 'Ockulär besiktning', name: `ockularBesiktning_${index}` },
-                { label: 'Ockulär infrastruktur', name: `ockularInfrastruktur_${index}` },
-                { label: 'Fungerar inte', name: `fungerarInte_${index}`, special: true }
+                { label: 'Ockulär infrastruktur', name: `ockularInfrastruktur_${index}` }
             ];
 
             testCriteria.forEach(criteria => {
                 const testItem = document.createElement('div');
                 testItem.classList.add('test-item');
-                if (criteria.special) {
-                    testItem.classList.add('not-working');
-                }
 
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
@@ -145,17 +192,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 testItem.appendChild(label);
 
                 cameraDiv.appendChild(testItem);
-
-                // Event Listener for "Fungerar inte" Checkbox
-                if (criteria.special) {
-                    checkbox.addEventListener('change', function() {
-                        if (checkbox.checked) {
-                            cameraDiv.classList.add('not-working-card');
-                        } else {
-                            cameraDiv.classList.remove('not-working-card');
-                        }
-                    });
-                }
             });
 
             // Comments Section
@@ -180,142 +216,73 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add cameraDiv to form
             cameraTestForm.appendChild(cameraDiv);
         });
-
-        // Create Submit Button
-        const submitButton = document.createElement('button');
-        submitButton.type = 'button';
-        submitButton.classList.add('btn', 'submit-button');
-        submitButton.textContent = 'Generera Rapport';
-        submitButton.style.backgroundColor = 'var(--secondary-color)';
-        submitButton.innerHTML = '<i class="fas fa-file-alt"></i> Generera Rapport';
-
-        cameraTestForm.appendChild(submitButton);
-
-        // Event Listener for Submit Button
-        submitButton.addEventListener('click', function() {
-            confirmationModal.style.display = 'flex';
-            confirmActionButton.focus();
-
-            // Temporarily change modal content for report generation
-            const modalTitle = document.getElementById('modalTitle');
-            const modalDescription = document.getElementById('modalDescription');
-
-            modalTitle.textContent = 'Bekräfta Rapportgenerering';
-            modalDescription.textContent = 'Är du säker på att du vill generera rapporten?';
-        });
     }
 
     // Function to generate Report
-    async function generateReport(siteData, siteName) {
+    function generateReport(siteData, siteName) {
         const cameras = siteData[siteName].hardware;
-        let reportHTML = `Testrapport för Site: ${siteName}\n<hr/>\n`;
+        let reportHTML = `<h3>Testrapport för Site: ${siteName}</h3><hr/>`;
         let reportText = `Testrapport för Site: ${siteName}\n\n`;
-        let emailText = `Testrapport för Site: ${siteName}\n\n`;
-    
-        if (!siteData[siteName].testing) {
-            siteData[siteName].testing = [];
-        }
-    
+
+        siteData[siteName].testing = [];
+
         for (let index = 0; index < cameras.length; index++) {
             const camera = cameras[index];
+            const functionality = document.querySelector(`input[name="functionality_${index}"]:checked`);
             const samtligaLinserElem = document.getElementById(`samtligaLinser_${index}`);
             const ockularBesiktningElem = document.getElementById(`ockularBesiktning_${index}`);
             const ockularInfrastrukturElem = document.getElementById(`ockularInfrastruktur_${index}`);
-            const fungerarInteElem = document.getElementById(`fungerarInte_${index}`);
             const commentElem = document.getElementById(`comment_${index}`);
-    
-            if (!samtligaLinserElem || !ockularBesiktningElem || !ockularInfrastrukturElem || !fungerarInteElem || !commentElem) {
-                console.warn(`Missing elements for camera index ${index}. Skipping...`);
-                continue;
-            }
-    
+
             const testResult = {
-                samtligaLinser: samtligaLinserElem.checked,
-                ockularBesiktning: ockularBesiktningElem.checked,
-                ockularInfrastruktur: ockularInfrastrukturElem.checked,
-                fungerarInte: fungerarInteElem.checked,
-                comments: commentElem.value.trim()
+                hardware_name: camera.hardware_name || `Kamera ${index + 1}`,
+                functionality: functionality ? functionality.value : 'Fungerar',
+                samtligaLinser: samtligaLinserElem ? samtligaLinserElem.checked : false,
+                ockularBesiktning: ockularBesiktningElem ? ockularBesiktningElem.checked : false,
+                ockularInfrastruktur: ockularInfrastrukturElem ? ockularInfrastrukturElem.checked : false,
+                comments: commentElem ? commentElem.value.trim() : ''
             };
-    
-            siteData[siteName].testing[index] = testResult;
-    
-            const cameraNameHTML = testResult.fungerarInte 
-                ? `<span style="color: red;">${camera}</span>` 
-                : `${camera}`;
-    
-            // Full report includes all cameras
+
+            siteData[siteName].testing.push(testResult);
+
+            // Update report HTML (full report)
+            const cameraNameHTML = testResult.functionality === 'Fungerar inte'
+                ? `<span style="color: red;">${testResult.hardware_name}</span>`
+                : `${testResult.hardware_name}`;
+
             reportHTML += `<strong>Kamera: ${cameraNameHTML}</strong><br/>`;
+            reportHTML += `- Funktionalitet: ${testResult.functionality}<br/>`;
             reportHTML += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}<br/>`;
             reportHTML += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}<br/>`;
             reportHTML += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}<br/>`;
-            reportHTML += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}<br/>`;
             reportHTML += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}<br/><br/>`;
-    
-            // Full text report
-            reportText += `Kamera: ${testResult.fungerarInte ? '✗ ' : '✓ '} ${camera}\n`;
-            reportText += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}\n`;
-            reportText += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}\n`;
-            reportText += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}\n`;
-            reportText += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}\n`;
-            reportText += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}\n\n`;
-    
-            // Email report includes only cameras with "fungerar inte"
-            if (testResult.fungerarInte) {
-                emailText += `Kamera: ✗ ${camera}\n`;
-                emailText += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}\n`;
-                emailText += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}\n`;
-                emailText += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}\n`;
-                emailText += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}\n`;
-                emailText += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}\n\n`;
-            }
         }
-    
+
         localStorage.setItem('siteData', JSON.stringify(siteData));
-    
+
         reportContent.innerHTML = reportHTML;
         reportSection.style.display = 'block';
-    
-        // Store full report text for download
-        reportSection.dataset.reportText = reportText;
-    
-        // Store email content only for "fungerar inte" cameras
-        reportSection.dataset.emailText = emailText;
+
+        // Prepare email report with only devices that "Fungerar inte"
+        let emailReportText = `Rapport för kameror som inte fungerar på Site: ${siteName}\n\n`;
+
+        const nonFunctionalCameras = siteData[siteName].testing.filter(testResult => testResult.functionality === 'Fungerar inte');
+
+        if (nonFunctionalCameras.length === 0) {
+            emailReportText += 'Alla kameror fungerar.\n';
+        } else {
+            nonFunctionalCameras.forEach(testResult => {
+                emailReportText += `Kamera: ${testResult.hardware_name}\n`;
+                emailReportText += `Kommentarer: ${testResult.comments || 'Ingen kommentar.'}\n\n`;
+            });
+        }
+
+        // Store email report text for sending via email
+        reportSection.dataset.emailReportText = emailReportText;
+
+        showNotification('Rapport genererad!');
     }
-        
-    // Function to send email report via mailto:
-    function sendEmailReport() {
-        const userEmail = userEmailInput.value.trim();
-        if (!userEmail) {
-            alert('Vänligen ange din e-postadress.');
-            return;
-        }
-    
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(userEmail)) {
-            alert('Vänligen ange en giltig e-postadress.');
-            return;
-        }
-    
-        const siteName = getQueryParam('site');
-        const subject = `Testrapport för Site: ${siteName}`;
-        const emailText = reportSection.dataset.emailText;
-    
-        if (!emailText) {
-            alert('Ingen rapport att skicka. Generera rapporten först.');
-            return;
-        }
-    
-        const formattedBody = encodeURIComponent(emailText);
-        const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${formattedBody}`;
-    
-        if (mailtoLink.length > 2000) {
-            alert('Rapporten är för lång för att skickas via e-post. Ladda ner rapporten som PDF och bifoga manuellt.');
-            return;
-        }
-    
-        window.location.href = mailtoLink;
-    }
-    
+
     // Function to load existing test results
     function loadExistingTestResults(siteData, siteName) {
         if (!siteData[siteName].testing) return;
@@ -325,24 +292,27 @@ document.addEventListener('DOMContentLoaded', function() {
         cameras.forEach((camera, index) => {
             const testResult = siteData[siteName].testing[index];
             if (testResult) {
+                const fungerarRadio = document.querySelector(`input[name="functionality_${index}"][value="${testResult.functionality}"]`);
+                if (fungerarRadio) fungerarRadio.checked = true;
+
+                const fungerarInteRadio = document.querySelector(`input[name="functionality_${index}"][value="Fungerar inte"]`);
+                const cameraDiv = document.querySelectorAll('.camera-item')[index];
+
+                // Update background color based on functionality
+                if (testResult.functionality === 'Fungerar inte') {
+                    cameraDiv.classList.add('red-background');
+                } else {
+                    cameraDiv.classList.remove('red-background');
+                }
+
                 const samtligaLinserElem = document.getElementById(`samtligaLinser_${index}`);
                 const ockularBesiktningElem = document.getElementById(`ockularBesiktning_${index}`);
                 const ockularInfrastrukturElem = document.getElementById(`ockularInfrastruktur_${index}`);
-                const fungerarInteElem = document.getElementById(`fungerarInte_${index}`);
                 const commentElem = document.getElementById(`comment_${index}`);
 
                 if (samtligaLinserElem) samtligaLinserElem.checked = testResult.samtligaLinser;
                 if (ockularBesiktningElem) ockularBesiktningElem.checked = testResult.ockularBesiktning;
                 if (ockularInfrastrukturElem) ockularInfrastrukturElem.checked = testResult.ockularInfrastruktur;
-                if (fungerarInteElem) {
-                    fungerarInteElem.checked = testResult.fungerarInte;
-                    if (testResult.fungerarInte) {
-                        const cameraDiv = samtligaLinserElem.closest('.camera-item');
-                        if (cameraDiv) {
-                            cameraDiv.classList.add('not-working-card');
-                        }
-                    }
-                }
                 if (commentElem) commentElem.value = testResult.comments;
             }
         });
@@ -351,8 +321,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to download report as PDF
     async function downloadReportAsPDF() {
         try {
-            loadingIndicator.style.display = 'flex';
-
             const canvas = await html2canvas(reportSection, { scale: 2 });
 
             const imgData = canvas.toDataURL('image/png');
@@ -360,63 +328,56 @@ document.addEventListener('DOMContentLoaded', function() {
             const imgProps = pdf.getImageProperties(imgData);
             const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            const pageHeight = pdf.internal.pageSize.getHeight() - 20;
-            let heightLeft = pdfHeight;
-            let position = 10;
 
-            pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
-            heightLeft -= pageHeight;
-
-            while (heightLeft > 0) {
-                position = heightLeft - pdfHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 10, position, pdfWidth, pdfHeight);
-                heightLeft -= pageHeight;
-            }
-
+            pdf.addImage(imgData, 'PNG', 10, 10, pdfWidth, pdfHeight);
             pdf.save(`Testrapport_${siteName}.pdf`);
 
-            loadingIndicator.style.display = 'none';
+            showNotification('PDF nedladdad!');
         } catch (error) {
             console.error('Error generating PDF:', error);
             alert('Det uppstod ett fel vid generering av PDF-rapporten.');
-            loadingIndicator.style.display = 'none';
         }
     }
 
-    // Function to close confirmation modal
-    function closeConfirmationModal() {
-        confirmationModal.style.display = 'none';
-        const activeButton = document.querySelector('.submit-button, .email-button');
-        if (activeButton) {
-            activeButton.focus();
+    // Function to send email report via mailto:
+    function sendEmailReport() {
+        const userEmail = userEmailInput.value.trim();
+        if (!userEmail) {
+            alert('Vänligen ange din e-postadress.');
+            return;
         }
 
-        const modalTitle = document.getElementById('modalTitle');
-        const modalDescription = document.getElementById('modalDescription');
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(userEmail)) {
+            alert('Vänligen ange en giltig e-postadress.');
+            return;
+        }
 
-        modalTitle.textContent = 'Bekräfta Åtgärd';
-        modalDescription.textContent = 'Är du säker på att du vill utföra denna åtgärd?';
+        const subject = `Testrapport för Site: ${siteName}`;
+        const emailText = reportSection.dataset.emailReportText;
+
+        if (!emailText) {
+            alert('Ingen rapport att skicka. Generera rapporten först.');
+            return;
+        }
+
+        const formattedBody = encodeURIComponent(emailText);
+        const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${formattedBody}`;
+
+        if (mailtoLink.length > 2000) {
+            alert('Rapporten är för lång för att skickas via e-post. Ladda ner rapporten som PDF och bifoga manuellt.');
+            return;
+        }
+
+        window.location.href = mailtoLink;
+
+        showNotification('E-postlänk öppnad!');
     }
 
-    // Event Listener for Confirm Action Button
-    if (confirmActionButton) {
-        confirmActionButton.addEventListener('click', async function() {
-            const modalTitle = document.getElementById('modalTitle');
-            if (modalTitle.textContent === 'Bekräfta Rapportgenerering') {
-                await generateReport(siteData, siteName);
-                confirmationModal.style.display = 'none';
-            } else if (modalTitle.textContent === 'Bekräfta E-postsändning') {
-                sendEmailReport();
-                confirmationModal.style.display = 'none';
-            }
-        });
-    }
-
-    // Event Listener for Cancel Action Button
-    if (cancelActionButton) {
-        cancelActionButton.addEventListener('click', closeConfirmationModal);
-    }
+    // Event Listener for Submit Button
+    submitButton.addEventListener('click', function() {
+        generateReport(siteData, siteName);
+    });
 
     // Event Listener for Download Report Button
     if (downloadReportButton) {
@@ -425,21 +386,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Event Listener for Send Email Report Button
     if (emailReportButton) {
-        emailReportButton.addEventListener('click', function() {
-            if (!reportSection.dataset.reportText) {
-                alert('Generera rapporten först innan du skickar via e-post.');
-                return;
-            }
-
-            confirmationModal.style.display = 'flex';
-            confirmActionButton.focus();
-
-            const modalTitle = document.getElementById('modalTitle');
-            const modalDescription = document.getElementById('modalDescription');
-
-            modalTitle.textContent = 'Bekräfta E-postsändning';
-            modalDescription.textContent = 'Är du säker på att du vill skicka rapporten via E-post?';
-        });
+        emailReportButton.addEventListener('click', sendEmailReport);
     }
 
     // Function to initialize form and load existing data
@@ -467,6 +414,8 @@ document.addEventListener('DOMContentLoaded', function() {
         displaySiteDetails(siteData, siteName);
         generateCameraTestForm(siteData, siteName);
         loadExistingTestResults(siteData, siteName);
+
+        showNotification('Kamera borttagen!');
     }
 
     // Event Delegation for Remove Buttons
@@ -477,17 +426,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Invalid index for removal.');
                 return;
             }
-            const cameraName = siteData[siteName].hardware[index];
+            const cameraName = siteData[siteName].hardware[index].hardware_name || `Kamera ${index + 1}`;
             if (confirm(`Är du säker på att du vill ta bort kameran "${cameraName}"?`)) {
                 handleRemoveCamera(index);
             }
-        }
-    });
-
-    // Event Listener to close modal when clicking outside modal-content
-    window.addEventListener('click', function(event) {
-        if (event.target === confirmationModal) {
-            closeConfirmationModal();
         }
     });
 });
