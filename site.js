@@ -132,6 +132,13 @@ document.addEventListener('DOMContentLoaded', function () {
             const functionalityDiv = document.createElement('div');
             functionalityDiv.classList.add('test-item');
 
+            const functionalityLabel = document.createElement('label');
+            functionalityLabel.textContent = 'Funktionalitet:';
+            functionalityDiv.appendChild(functionalityLabel);
+
+            const functionalityGroup = document.createElement('div');
+            functionalityGroup.classList.add('input-group');
+
             const fungerarRadio = document.createElement('input');
             fungerarRadio.type = 'radio';
             fungerarRadio.name = `functionality_${index}`;
@@ -142,6 +149,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const fungerarLabel = document.createElement('label');
             fungerarLabel.htmlFor = `functionality_${index}_fungerar`;
             fungerarLabel.textContent = 'Fungerar';
+            fungerarLabel.prepend(fungerarRadio);
 
             const fungerarInteRadio = document.createElement('input');
             fungerarInteRadio.type = 'radio';
@@ -152,11 +160,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const fungerarInteLabel = document.createElement('label');
             fungerarInteLabel.htmlFor = `functionality_${index}_fungerarInte`;
             fungerarInteLabel.textContent = 'Fungerar inte';
+            fungerarInteLabel.prepend(fungerarInteRadio);
 
-            functionalityDiv.appendChild(fungerarRadio);
-            functionalityDiv.appendChild(fungerarLabel);
-            functionalityDiv.appendChild(fungerarInteRadio);
-            functionalityDiv.appendChild(fungerarInteLabel);
+            functionalityGroup.appendChild(fungerarLabel);
+            functionalityGroup.appendChild(fungerarInteLabel);
+            functionalityDiv.appendChild(functionalityGroup);
 
             cameraDiv.appendChild(functionalityDiv);
 
@@ -184,6 +192,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 const testItem = document.createElement('div');
                 testItem.classList.add('test-item');
 
+                const criteriaLabel = document.createElement('label');
+                criteriaLabel.textContent = criteria.label;
+                testItem.appendChild(criteriaLabel);
+
+                const checkboxGroup = document.createElement('div');
+                checkboxGroup.classList.add('input-group');
+
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.id = criteria.name;
@@ -193,9 +208,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 const label = document.createElement('label');
                 label.htmlFor = criteria.name;
                 label.textContent = criteria.label;
+                label.prepend(checkbox);
 
-                testItem.appendChild(checkbox);
-                testItem.appendChild(label);
+                checkboxGroup.appendChild(label);
+                testItem.appendChild(checkboxGroup);
 
                 cameraDiv.appendChild(testItem);
             });

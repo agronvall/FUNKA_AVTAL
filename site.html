@@ -125,22 +125,44 @@
         }
 
         .test-item {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .test-item label {
-            margin-left: 8px;
-            font-size: 0.95rem;
+            font-size: 1rem;
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .test-item .input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .test-item .input-group label {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+
+        .test-item .input-group input[type="radio"],
+        .test-item .input-group input[type="checkbox"] {
+            margin-right: 5px;
+            transform: scale(1.2);
         }
 
         .comment-section {
-            margin-top: 15px;
+            margin-top: 20px;
         }
 
         .comment-section label {
             display: block;
             margin-bottom: 5px;
             font-weight: 600;
+            font-size: 1rem;
         }
 
         .comment-section textarea {
@@ -149,20 +171,21 @@
             border-radius: var(--border-radius);
             border: 1px solid #E5E7EB;
             font-family: var(--font-family);
-            font-size: 0.95rem;
+            font-size: 1rem;
+            resize: vertical;
         }
 
         .submit-button {
             background-color: var(--accent-color);
             color: var(--secondary-color);
             border: none;
-            padding: 12px 20px;
+            padding: 15px 20px;
             border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             transition: background-color var(--transition-speed) ease;
-            margin-top: 20px;
+            margin-top: 30px;
             display: block;
             width: 100%;
         }
@@ -188,7 +211,7 @@
             border: 1px solid #E5E7EB;
             border-radius: var(--border-radius);
             padding: 20px;
-            font-size: 0.95rem;
+            font-size: 1rem;
             line-height: 1.6;
         }
 
@@ -201,13 +224,14 @@
             background-color: var(--primary-color);
             color: var(--secondary-color);
             border: none;
-            padding: 12px 20px;
+            padding: 15px 20px;
             border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             transition: background-color var(--transition-speed) ease;
-            margin: 0 10px;
+            margin: 10px 5px;
+            width: 200px;
         }
 
         .report-buttons .btn:hover {
@@ -281,7 +305,7 @@
             border-radius: var(--border-radius);
             border: 1px solid #E5E7EB;
             font-family: var(--font-family);
-            font-size: 0.95rem;
+            font-size: 1rem;
             margin-bottom: 15px;
         }
 
@@ -289,10 +313,10 @@
             background-color: var(--accent-color);
             color: var(--secondary-color);
             border: none;
-            padding: 12px 20px;
+            padding: 15px 20px;
             border-radius: var(--border-radius);
             cursor: pointer;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 600;
             transition: background-color var(--transition-speed) ease;
             width: 100%;
@@ -309,14 +333,15 @@
             }
 
             .submit-button {
-                font-size: 0.9rem;
-                padding: 10px 15px;
+                font-size: 1rem;
+                padding: 12px 15px;
             }
 
             .report-buttons .btn {
-                font-size: 0.9rem;
-                padding: 10px 15px;
+                font-size: 1rem;
+                padding: 12px 15px;
                 margin: 10px 5px;
+                width: 160px;
             }
         }
 
@@ -342,6 +367,11 @@
                 width: 100%;
             }
 
+            .report-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
             .report-buttons .btn {
                 width: 100%;
                 margin: 10px 0;
@@ -349,6 +379,11 @@
 
             .add-hardware-button {
                 width: 100%;
+            }
+
+            .test-item .input-group {
+                flex-direction: column;
+                align-items: flex-start;
             }
         }
 
@@ -358,19 +393,19 @@
             }
 
             .camera-item h3 {
-                font-size: 1.1rem;
+                font-size: 1.2rem;
             }
 
             .test-item label {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
 
             .comment-section label {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
 
             .comment-section textarea {
-                font-size: 0.9rem;
+                font-size: 1rem;
             }
         }
     </style>
