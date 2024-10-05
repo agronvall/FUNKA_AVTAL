@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const downloadReportButton = document.getElementById('downloadReportButton');
     const emailReportButton = document.getElementById('emailReportButton');
     const loadingIndicator = document.getElementById('loadingIndicator');
+    const userEmailInput = document.getElementById('userEmail');
 
     // Funktion för att hämta URL-parametrar
     function getQueryParam(param) {
@@ -115,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             cameraDiv.appendChild(cameraTitle);
 
-            // Testkriterier med uppdaterade etiketter (Removed "Annan")
+            // Testkriterier utan "Annan"
             const testCriteria = [
                 { label: 'Samtliga linser besiktigade', name: `samtligaLinser_${index}` },
                 { label: 'Ockulär besiktning', name: `ockularBesiktning_${index}` },
@@ -194,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.addEventListener('click', function() {
             // Visa bekräftelse modal innan rapport genereras
             confirmationModal.style.display = 'flex';
-            confirmActionButton.focus(); // Set focus to "Ja" button
+            confirmActionButton.focus(); // Sätt fokus till "Ja" knappen
 
             // Temporärt ändra modal innehåll för rapportgenerering
             const modalTitle = document.getElementById('modalTitle');
@@ -208,7 +209,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funktion för att generera Rapport
     async function generateReport(siteData, siteName) {
         const cameras = siteData[siteName].hardware;
-        let reportHTML = `<h3>Testrapport för Site: ${siteName}</h3><br/>`;
+        let reportHTML = `Testrapport för Site: ${siteName}\n<hr/>\n`;
+        let reportText = `Testrapport för Site: ${siteName}\n\n`;
 
         // Initiera testresultat om de inte finns
         if (!siteData[siteName].testing) {
@@ -253,6 +255,14 @@ document.addEventListener('DOMContentLoaded', function() {
             reportHTML += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}<br/>`;
             reportHTML += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}<br/>`;
             reportHTML += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}<br/><br/>`;
+
+            // Generera rapportText med radbrytningar
+            reportText += `Kamera: ${testResult.fungerarInte ? '✗ ' : '✓ '} ${camera}\n`;
+            reportText += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}\n`;
+            reportText += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}\n`;
+            reportText += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}\n`;
+            reportText += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}\n`;
+            reportText += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}\n\n`;
         }
 
         // Spara uppdaterad siteData till localStorage
@@ -261,16 +271,35 @@ document.addEventListener('DOMContentLoaded', function() {
         // Visa Rapport
         reportContent.innerHTML = reportHTML;
         reportSection.style.display = 'block';
+
+        // Spara reportText för e-post
+        reportSection.dataset.reportText = reportText;
     }
 
-    // Funktion för att skapa Email-knapp (ändrad för att använda mailto:)
+    // Funktion för att skicka e-postrapport via mailto:
     function sendEmailReport() {
-        const reportText = reportContent.textContent || reportContent.innerText;
-        const subject = encodeURIComponent(`Testrapport för Site: ${siteName}`);
-        const body = encodeURIComponent(reportText);
+        const userEmail = userEmailInput.value.trim();
+        if (!userEmail) {
+            alert('Vänligen ange din e-postadress.');
+            return;
+        }
+
+        // Enkel e-postadress validering
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(userEmail)) {
+            alert('Vänligen ange en giltig e-postadress.');
+            return;
+        }
+
+        const siteName = getQueryParam('site');
+        const subject = `Testrapport för Site: ${siteName}`;
+        const reportText = reportSection.dataset.reportText;
+
+        // Ersätt alla \n med %0D%0A för att bibehålla radbrytningar i mailto:
+        const formattedBody = encodeURIComponent(reportText);
 
         // Skapa mailto URL
-        const mailtoLink = `mailto:?subject=${subject}&body=${body}`;
+        const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${formattedBody}`;
 
         // Öppna mailklienten
         window.location.href = mailtoLink;
@@ -306,20 +335,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (commentElem) commentElem.value = testResult.comments;
             }
         });
-    }
-
-    // Funktion för att ladda ner rapporten som .txt fil
-    function downloadReportAsTXT() {
-        const reportText = reportContent.textContent;
-        const blob = new Blob([reportText], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Testrapport_${siteName}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
     }
 
     // Funktion för att ladda ner rapporten som PDF
@@ -366,10 +381,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Funktion för att stänga Bekräftelse Modal
     function closeConfirmationModal() {
         confirmationModal.style.display = 'none';
-        // Return focus till "Generera Rapport" button
-        const submitButton = document.querySelector('.submit-button');
-        if (submitButton) {
-            submitButton.focus();
+        // Return focus till "Generera Rapport" eller "Skicka via E-post" knapp
+        const activeButton = document.querySelector('.submit-button, .email-button');
+        if (activeButton) {
+            activeButton.focus();
         }
 
         // Återställ modal innehåll om det ändrades
@@ -378,18 +393,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         modalTitle.textContent = 'Bekräfta Åtgärd';
         modalDescription.textContent = 'Är du säker på att du vill utföra denna åtgärd?';
-
-        // Återställ bekräfta knappen event listener till rapportgenerering
-        confirmActionButton.onclick = async function() {
-            const currentAction = confirmActionButton.getAttribute('data-action');
-            if (currentAction === 'generateReport') {
-                await generateReport(siteData, siteName);
-                confirmationModal.style.display = 'none';
-            } else if (currentAction === 'sendEmail') {
-                sendEmailReport();
-                confirmationModal.style.display = 'none';
-            }
-        };
     }
 
     // Event Listener för Bekräfta Åtgärd Knapp
@@ -397,11 +400,11 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmActionButton.addEventListener('click', async function() {
             const modalTitle = document.getElementById('modalTitle');
             if (modalTitle.textContent === 'Bekräfta Rapportgenerering') {
-                confirmActionButton.setAttribute('data-action', 'generateReport');
+                // Generera rapport
                 await generateReport(siteData, siteName);
                 confirmationModal.style.display = 'none';
             } else if (modalTitle.textContent === 'Bekräfta E-postsändning') {
-                confirmActionButton.setAttribute('data-action', 'sendEmail');
+                // Skicka e-postrapport
                 sendEmailReport();
                 confirmationModal.style.display = 'none';
             }
@@ -423,9 +426,15 @@ document.addEventListener('DOMContentLoaded', function() {
     // Event Listener för Skicka Rapport via E-post Knapp
     if (emailReportButton) {
         emailReportButton.addEventListener('click', function() {
+            // Kontrollera om rapporten har genererats
+            if (!reportSection.dataset.reportText) {
+                alert('Generera rapporten först innan du skickar via e-post.');
+                return;
+            }
+
             // Visa bekräftelse modal innan email skickas
             confirmationModal.style.display = 'flex';
-            confirmActionButton.focus(); // Set focus to "Ja" button
+            confirmActionButton.focus(); // Sätt fokus till "Ja" knappen
 
             // Ändra modal innehåll för e-postbekräftelse
             const modalTitle = document.getElementById('modalTitle');
@@ -489,4 +498,33 @@ document.addEventListener('DOMContentLoaded', function() {
             closeConfirmationModal();
         }
     });
+
+    // Funktion för att skicka e-postrapport via mailto:
+    function sendEmailReport() {
+        const userEmail = userEmailInput.value.trim();
+        if (!userEmail) {
+            alert('Vänligen ange din e-postadress.');
+            return;
+        }
+
+        // Enkel e-postadress validering
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(userEmail)) {
+            alert('Vänligen ange en giltig e-postadress.');
+            return;
+        }
+
+        const siteName = getQueryParam('site');
+        const subject = `Testrapport för Site: ${siteName}`;
+        const reportText = reportSection.dataset.reportText;
+
+        // Ersätt alla \n med %0D%0A för att bibehålla radbrytningar i mailto:
+        const formattedBody = encodeURIComponent(reportText);
+
+        // Skapa mailto URL
+        const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${formattedBody}`;
+
+        // Öppna mailklienten
+        window.location.href = mailtoLink;
+    }
 });

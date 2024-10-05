@@ -231,7 +231,7 @@
         }
 
         .camera-item.not-working-card {
-            border-color: #FF0000;
+            border-color: var(--accent-color);
             background-color: #ffe6e6;
         }
 
@@ -247,7 +247,7 @@
         }
 
         .test-item.not-working {
-            color: #FF0000; /* Röd färg för "Fungerar inte" */
+            color: var(--accent-color); /* Röd färg för "Fungerar inte" */
             font-weight: bold;
         }
 
@@ -406,6 +406,34 @@
         #confirmationModal .modal-buttons button {
             flex: 1;
         }
+
+        /* E-postadress Inmatningsfält */
+        .email-input-section {
+            width: 100%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .email-input-section label {
+            font-weight: 600;
+        }
+
+        .email-input-section input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        .email-input-section input:invalid {
+            border-color: red;
+        }
+
+        .email-input-section input:valid {
+            border-color: green;
+        }
     </style>
 </head>
 <body>
@@ -442,6 +470,13 @@
                 <div class="report-content" id="reportContent">
                     <!-- Rapportinnehåll kommer att genereras här -->
                 </div>
+                
+                <!-- E-postadress Inmatningsfält -->
+                <div class="email-input-section">
+                    <label for="userEmail">Din E-postadress:</label>
+                    <input type="email" id="userEmail" placeholder="Ange din e-postadress" required>
+                </div>
+                
                 <button id="downloadReportButton" class="download-button">
                     <i class="fas fa-download"></i> Ladda ner Rapport
                 </button>
