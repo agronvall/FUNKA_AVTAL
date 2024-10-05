@@ -120,15 +120,21 @@ document.addEventListener('DOMContentLoaded', function () {
         cameraTestForm.innerHTML = '';
 
         cameras.forEach((camera, index) => {
-            const cameraDiv = document.createElement('div');
-            cameraDiv.classList.add('camera-item');
+            const accordionItem = document.createElement('div');
+            accordionItem.classList.add('accordion-item');
 
-            const cameraTitle = document.createElement('h3');
-            cameraTitle.textContent = camera.hardware_name || `Kamera ${index + 1}`;
+            const accordionHeader = document.createElement('div');
+            accordionHeader.classList.add('accordion-header');
+            accordionHeader.textContent = camera.hardware_name || `Kamera ${index + 1}`;
 
-            cameraDiv.appendChild(cameraTitle);
+            const icon = document.createElement('i');
+            icon.classList.add('fas', 'fa-chevron-down', 'icon');
+            accordionHeader.appendChild(icon);
 
-            // Functionality Radio Buttons
+            const accordionContent = document.createElement('div');
+            accordionContent.classList.add('accordion-content');
+
+            // Functionality Toggle Switch
             const functionalityDiv = document.createElement('div');
             functionalityDiv.classList.add('test-item');
 
@@ -139,47 +145,40 @@ document.addEventListener('DOMContentLoaded', function () {
             const functionalityGroup = document.createElement('div');
             functionalityGroup.classList.add('input-group');
 
-            const fungerarRadio = document.createElement('input');
-            fungerarRadio.type = 'radio';
-            fungerarRadio.name = `functionality_${index}`;
-            fungerarRadio.value = 'Fungerar';
-            fungerarRadio.checked = true;
-            fungerarRadio.id = `functionality_${index}_fungerar`;
+            const toggleLabel = document.createElement('label');
+            toggleLabel.classList.add('toggle-switch');
 
-            const fungerarLabel = document.createElement('label');
-            fungerarLabel.htmlFor = `functionality_${index}_fungerar`;
-            fungerarLabel.textContent = 'Fungerar';
-            fungerarLabel.prepend(fungerarRadio);
+            const functionalityToggle = document.createElement('input');
+            functionalityToggle.type = 'checkbox';
+            functionalityToggle.name = `functionality_${index}`;
+            functionalityToggle.id = `functionality_${index}_toggle`;
+            functionalityToggle.checked = true;
 
-            const fungerarInteRadio = document.createElement('input');
-            fungerarInteRadio.type = 'radio';
-            fungerarInteRadio.name = `functionality_${index}`;
-            fungerarInteRadio.value = 'Fungerar inte';
-            fungerarInteRadio.id = `functionality_${index}_fungerarInte`;
+            const slider = document.createElement('span');
+            slider.classList.add('slider');
 
-            const fungerarInteLabel = document.createElement('label');
-            fungerarInteLabel.htmlFor = `functionality_${index}_fungerarInte`;
-            fungerarInteLabel.textContent = 'Fungerar inte';
-            fungerarInteLabel.prepend(fungerarInteRadio);
+            toggleLabel.appendChild(functionalityToggle);
+            toggleLabel.appendChild(slider);
 
-            functionalityGroup.appendChild(fungerarLabel);
-            functionalityGroup.appendChild(fungerarInteLabel);
+            const toggleText = document.createElement('span');
+            toggleText.textContent = 'Fungerar';
+
+            functionalityGroup.appendChild(toggleLabel);
+            functionalityGroup.appendChild(toggleText);
             functionalityDiv.appendChild(functionalityGroup);
 
-            cameraDiv.appendChild(functionalityDiv);
-
-            // Event listeners to change background color
-            fungerarRadio.addEventListener('change', function () {
-                if (fungerarRadio.checked) {
-                    cameraDiv.classList.remove('red-background');
+            // Event listener to change text and background color
+            functionalityToggle.addEventListener('change', function () {
+                if (functionalityToggle.checked) {
+                    toggleText.textContent = 'Fungerar';
+                    accordionContent.classList.remove('red-background');
+                } else {
+                    toggleText.textContent = 'Fungerar inte';
+                    accordionContent.classList.add('red-background');
                 }
             });
 
-            fungerarInteRadio.addEventListener('change', function () {
-                if (fungerarInteRadio.checked) {
-                    cameraDiv.classList.add('red-background');
-                }
-            });
+            accordionContent.appendChild(functionalityDiv);
 
             // Test criteria
             const testCriteria = [
@@ -199,21 +198,34 @@ document.addEventListener('DOMContentLoaded', function () {
                 const checkboxGroup = document.createElement('div');
                 checkboxGroup.classList.add('input-group');
 
+                const toggleLabel = document.createElement('label');
+                toggleLabel.classList.add('toggle-switch');
+
                 const checkbox = document.createElement('input');
                 checkbox.type = 'checkbox';
                 checkbox.id = criteria.name;
                 checkbox.name = criteria.name;
                 checkbox.value = criteria.label;
 
-                const label = document.createElement('label');
-                label.htmlFor = criteria.name;
-                label.textContent = criteria.label;
-                label.prepend(checkbox);
+                const slider = document.createElement('span');
+                slider.classList.add('slider');
 
-                checkboxGroup.appendChild(label);
+                toggleLabel.appendChild(checkbox);
+                toggleLabel.appendChild(slider);
+
+                const toggleText = document.createElement('span');
+                toggleText.textContent = 'Nej';
+
+                checkbox.addEventListener('change', function () {
+                    toggleText.textContent = checkbox.checked ? 'Ja' : 'Nej';
+                });
+
+                checkboxGroup.appendChild(toggleLabel);
+                checkboxGroup.appendChild(toggleText);
+
                 testItem.appendChild(checkboxGroup);
 
-                cameraDiv.appendChild(testItem);
+                accordionContent.appendChild(testItem);
             });
 
             // Comments Section
@@ -233,10 +245,26 @@ document.addEventListener('DOMContentLoaded', function () {
             commentDiv.appendChild(commentLabel);
             commentDiv.appendChild(commentTextarea);
 
-            cameraDiv.appendChild(commentDiv);
+            accordionContent.appendChild(commentDiv);
 
-            // Add cameraDiv to form
-            cameraTestForm.appendChild(cameraDiv);
+            // Append content to accordion item
+            accordionItem.appendChild(accordionHeader);
+            accordionItem.appendChild(accordionContent);
+
+            // Add accordion item to form
+            cameraTestForm.appendChild(accordionItem);
+
+            // Accordion functionality
+            accordionHeader.addEventListener('click', function () {
+                accordionHeader.classList.toggle('active');
+                accordionContent.classList.toggle('active');
+            });
+
+            // By default, collapse all except the first
+            if (index === 0) {
+                accordionHeader.classList.add('active');
+                accordionContent.classList.add('active');
+            }
         });
     }
 
@@ -250,7 +278,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
         for (let index = 0; index < cameras.length; index++) {
             const camera = cameras[index];
-            const functionality = document.querySelector(`input[name="functionality_${index}"]:checked`);
+            const functionalityToggle = document.getElementById(`functionality_${index}_toggle`);
+            const functionality = functionalityToggle.checked ? 'Fungerar' : 'Fungerar inte';
+
             const samtligaLinserElem = document.getElementById(`samtligaLinser_${index}`);
             const ockularBesiktningElem = document.getElementById(`ockularBesiktning_${index}`);
             const ockularInfrastrukturElem = document.getElementById(`ockularInfrastruktur_${index}`);
@@ -258,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const testResult = {
                 hardware_name: camera.hardware_name || `Kamera ${index + 1}`,
-                functionality: functionality ? functionality.value : 'Fungerar',
+                functionality: functionality,
                 samtligaLinser: samtligaLinserElem ? samtligaLinserElem.checked : false,
                 ockularBesiktning: ockularBesiktningElem ? ockularBesiktningElem.checked : false,
                 ockularInfrastruktur: ockularInfrastrukturElem ? ockularInfrastrukturElem.checked : false,
@@ -274,9 +304,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
             reportHTML += `<strong>Kamera: ${cameraNameHTML}</strong><br/>`;
             reportHTML += `- Funktionalitet: ${testResult.functionality}<br/>`;
-            reportHTML += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}<br/>`;
-            reportHTML += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}<br/>`;
-            reportHTML += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}<br/>`;
+            reportHTML += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? 'Ja' : 'Nej'}<br/>`;
+            reportHTML += `- Ockulär besiktning: ${testResult.ockularBesiktning ? 'Ja' : 'Nej'}<br/>`;
+            reportHTML += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? 'Ja' : 'Nej'}<br/>`;
             reportHTML += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}<br/><br/>`;
         }
 
@@ -314,17 +344,17 @@ document.addEventListener('DOMContentLoaded', function () {
         cameras.forEach((camera, index) => {
             const testResult = siteData[siteName].testing[index];
             if (testResult) {
-                const fungerarRadio = document.querySelector(`input[name="functionality_${index}"][value="${testResult.functionality}"]`);
-                if (fungerarRadio) fungerarRadio.checked = true;
+                const functionalityToggle = document.getElementById(`functionality_${index}_toggle`);
+                functionalityToggle.checked = testResult.functionality === 'Fungerar';
 
-                const fungerarInteRadio = document.querySelector(`input[name="functionality_${index}"][value="Fungerar inte"]`);
-                const cameraDiv = document.querySelectorAll('.camera-item')[index];
-
-                // Update background color based on functionality
-                if (testResult.functionality === 'Fungerar inte') {
-                    cameraDiv.classList.add('red-background');
+                const accordionContent = functionalityToggle.closest('.accordion-content');
+                const toggleText = functionalityToggle.parentElement.nextElementSibling;
+                if (functionalityToggle.checked) {
+                    toggleText.textContent = 'Fungerar';
+                    accordionContent.classList.remove('red-background');
                 } else {
-                    cameraDiv.classList.remove('red-background');
+                    toggleText.textContent = 'Fungerar inte';
+                    accordionContent.classList.add('red-background');
                 }
 
                 const samtligaLinserElem = document.getElementById(`samtligaLinser_${index}`);
@@ -332,9 +362,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 const ockularInfrastrukturElem = document.getElementById(`ockularInfrastruktur_${index}`);
                 const commentElem = document.getElementById(`comment_${index}`);
 
-                if (samtligaLinserElem) samtligaLinserElem.checked = testResult.samtligaLinser;
-                if (ockularBesiktningElem) ockularBesiktningElem.checked = testResult.ockularBesiktning;
-                if (ockularInfrastrukturElem) ockularInfrastrukturElem.checked = testResult.ockularInfrastruktur;
+                if (samtligaLinserElem) {
+                    samtligaLinserElem.checked = testResult.samtligaLinser;
+                    const toggleText = samtligaLinserElem.parentElement.nextElementSibling;
+                    toggleText.textContent = testResult.samtligaLinser ? 'Ja' : 'Nej';
+                }
+                if (ockularBesiktningElem) {
+                    ockularBesiktningElem.checked = testResult.ockularBesiktning;
+                    const toggleText = ockularBesiktningElem.parentElement.nextElementSibling;
+                    toggleText.textContent = testResult.ockularBesiktning ? 'Ja' : 'Nej';
+                }
+                if (ockularInfrastrukturElem) {
+                    ockularInfrastrukturElem.checked = testResult.ockularInfrastruktur;
+                    const toggleText = ockularInfrastrukturElem.parentElement.nextElementSibling;
+                    toggleText.textContent = testResult.ockularInfrastruktur ? 'Ja' : 'Nej';
+                }
                 if (commentElem) commentElem.value = testResult.comments;
             }
         });
