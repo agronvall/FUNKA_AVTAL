@@ -349,7 +349,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to send email report via mailto:
     function sendEmailReport() {
-        const userEmail = prompt('Ange din e-postadress:');
+        const userEmail = prompt('Ange mottagarens e-postadress:');
         if (!userEmail) {
             alert('E-postadress krävs för att skicka rapporten.');
             return;
@@ -369,14 +369,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
+        // Encode email content
         const formattedBody = encodeURIComponent(emailText);
+
+        // Prepare mailto link
         const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${formattedBody}`;
 
-        if (mailtoLink.length > 2000) {
-            alert('Rapporten är för lång för att skickas via e-post. Ladda ner rapporten som PDF och bifoga manuellt.');
-            return;
-        }
-
+        // Open mail client
         window.location.href = mailtoLink;
 
         showNotification('E-postlänk öppnad!');
