@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const loadingIndicator = document.getElementById('loadingIndicator');
     const userEmailInput = document.getElementById('userEmail');
 
-    // Funktion för att hämta URL-parametrar
+    // Function to get URL parameters
     function getQueryParam(param) {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get(param);
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Hämta siteData från localStorage
+    // Get siteData from localStorage
     const storedData = localStorage.getItem('siteData');
     let siteData = null;
     if (storedData) {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Funktion för att visa site detaljer
+    // Function to display site details
     function displaySiteDetails(siteData, siteName) {
         if (!siteData[siteName]) {
             siteDetailsContainer.innerHTML = `<p>Site "${siteName}" hittades inte.</p>`;
@@ -46,15 +46,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const site = siteData[siteName];
 
-        // Rensa befintligt innehåll
+        // Clear existing content
         siteDetailsContainer.innerHTML = '';
 
-        // Skapa element för site namn
+        // Create site name element
         const siteHeader = document.createElement('div');
         siteHeader.classList.add('site-header');
         siteHeader.textContent = siteName;
 
-        // Lista över hårdvara (kameror)
+        // Create hardware list
         const hardwareList = document.createElement('ul');
         hardwareList.classList.add('hardware-list');
 
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
             hardwareList.appendChild(listItem);
         }
 
-        // Lägg till element i containern
+        // Add elements to the container
         siteDetailsContainer.appendChild(siteHeader);
         siteDetailsContainer.appendChild(hardwareList);
     }
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         siteDetailsContainer.innerHTML = '<p>Ingen site data hittades. Vänligen ladda site data på huvudidan.</p>';
     }
 
-    // Funktion för att generera Kamera Test Form
+    // Function to generate Camera Test Form
     function generateCameraTestForm(siteData, siteName) {
         if (!siteData[siteName] || !siteData[siteName].hardware) {
             cameraTestForm.innerHTML = '<p>Ingen kameradata tillgänglig för test.</p>';
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const cameras = siteData[siteName].hardware;
 
-        // Rensa befintligt innehåll i formuläret
+        // Clear existing form content
         cameraTestForm.innerHTML = '';
 
         cameras.forEach((camera, index) => {
@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             cameraDiv.appendChild(cameraTitle);
 
-            // Testkriterier utan "Annan"
+            // Test criteria without "Other"
             const testCriteria = [
                 { label: 'Samtliga linser besiktigade', name: `samtligaLinser_${index}` },
                 { label: 'Ockulär besiktning', name: `ockularBesiktning_${index}` },
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 cameraDiv.appendChild(testItem);
 
-                // Event Listener för "Fungerar inte" Checkbox
+                // Event Listener for "Fungerar inte" Checkbox
                 if (criteria.special) {
                     checkbox.addEventListener('change', function() {
                         if (checkbox.checked) {
@@ -158,7 +158,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
 
-            // Kommentarer Sektion
+            // Comments Section
             const commentDiv = document.createElement('div');
             commentDiv.classList.add('comment-section');
 
@@ -177,11 +177,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
             cameraDiv.appendChild(commentDiv);
 
-            // Lägg till kameraDiv i formuläret
+            // Add cameraDiv to form
             cameraTestForm.appendChild(cameraDiv);
         });
 
-        // Skapa Submit Knapp
+        // Create Submit Button
         const submitButton = document.createElement('button');
         submitButton.type = 'button';
         submitButton.classList.add('btn', 'submit-button');
@@ -191,13 +191,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         cameraTestForm.appendChild(submitButton);
 
-        // Event Listener för Submit Knapp
+        // Event Listener for Submit Button
         submitButton.addEventListener('click', function() {
-            // Visa bekräftelse modal innan rapport genereras
             confirmationModal.style.display = 'flex';
-            confirmActionButton.focus(); // Sätt fokus till "Ja" knappen
+            confirmActionButton.focus();
 
-            // Temporärt ändra modal innehåll för rapportgenerering
+            // Temporarily change modal content for report generation
             const modalTitle = document.getElementById('modalTitle');
             const modalDescription = document.getElementById('modalDescription');
 
@@ -206,32 +205,30 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Funktion för att generera Rapport
+    // Function to generate Report
     async function generateReport(siteData, siteName) {
         const cameras = siteData[siteName].hardware;
         let reportHTML = `Testrapport för Site: ${siteName}\n<hr/>\n`;
         let reportText = `Testrapport för Site: ${siteName}\n\n`;
-
-        // Initiera testresultat om de inte finns
+        let emailText = `Testrapport för Site: ${siteName}\n\n`;
+    
         if (!siteData[siteName].testing) {
             siteData[siteName].testing = [];
         }
-
+    
         for (let index = 0; index < cameras.length; index++) {
             const camera = cameras[index];
-            // Hämta testresultat
             const samtligaLinserElem = document.getElementById(`samtligaLinser_${index}`);
             const ockularBesiktningElem = document.getElementById(`ockularBesiktning_${index}`);
             const ockularInfrastrukturElem = document.getElementById(`ockularInfrastruktur_${index}`);
             const fungerarInteElem = document.getElementById(`fungerarInte_${index}`);
             const commentElem = document.getElementById(`comment_${index}`);
-
-            // Kontrollera om element finns
+    
             if (!samtligaLinserElem || !ockularBesiktningElem || !ockularInfrastrukturElem || !fungerarInteElem || !commentElem) {
                 console.warn(`Missing elements for camera index ${index}. Skipping...`);
                 continue;
             }
-
+    
             const testResult = {
                 samtligaLinser: samtligaLinserElem.checked,
                 ockularBesiktning: ockularBesiktningElem.checked,
@@ -239,73 +236,87 @@ document.addEventListener('DOMContentLoaded', function() {
                 fungerarInte: fungerarInteElem.checked,
                 comments: commentElem.value.trim()
             };
-
-            // Spara till siteData
+    
             siteData[siteName].testing[index] = testResult;
-
-            // Bestäm om kameran ska visas i rött
+    
             const cameraNameHTML = testResult.fungerarInte 
                 ? `<span style="color: red;">${camera}</span>` 
                 : `${camera}`;
-
-            // Generera rapporttext med hårdvarunamn som kameranamn
+    
+            // Full report includes all cameras
             reportHTML += `<strong>Kamera: ${cameraNameHTML}</strong><br/>`;
             reportHTML += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}<br/>`;
             reportHTML += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}<br/>`;
             reportHTML += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}<br/>`;
             reportHTML += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}<br/>`;
             reportHTML += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}<br/><br/>`;
-
-            // Generera rapportText med radbrytningar
+    
+            // Full text report
             reportText += `Kamera: ${testResult.fungerarInte ? '✗ ' : '✓ '} ${camera}\n`;
             reportText += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}\n`;
             reportText += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}\n`;
             reportText += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}\n`;
             reportText += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}\n`;
             reportText += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}\n\n`;
+    
+            // Email report includes only cameras with "fungerar inte"
+            if (testResult.fungerarInte) {
+                emailText += `Kamera: ✗ ${camera}\n`;
+                emailText += `- Samtliga linser besiktigade: ${testResult.samtligaLinser ? '✓' : '✗'}\n`;
+                emailText += `- Ockulär besiktning: ${testResult.ockularBesiktning ? '✓' : '✗'}\n`;
+                emailText += `- Ockulär infrastruktur: ${testResult.ockularInfrastruktur ? '✓' : '✗'}\n`;
+                emailText += `- Fungerar inte: ${testResult.fungerarInte ? '✓' : '✗'}\n`;
+                emailText += `- Kommentarer: ${testResult.comments || 'Ingen kommentar.'}\n\n`;
+            }
         }
-
-        // Spara uppdaterad siteData till localStorage
+    
         localStorage.setItem('siteData', JSON.stringify(siteData));
-
-        // Visa Rapport
+    
         reportContent.innerHTML = reportHTML;
         reportSection.style.display = 'block';
-
-        // Spara reportText för e-post
+    
+        // Store full report text for download
         reportSection.dataset.reportText = reportText;
+    
+        // Store email content only for "fungerar inte" cameras
+        reportSection.dataset.emailText = emailText;
     }
-
-    // Funktion för att skicka e-postrapport via mailto:
+        
+    // Function to send email report via mailto:
     function sendEmailReport() {
         const userEmail = userEmailInput.value.trim();
         if (!userEmail) {
             alert('Vänligen ange din e-postadress.');
             return;
         }
-
-        // Enkel e-postadress validering
+    
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(userEmail)) {
             alert('Vänligen ange en giltig e-postadress.');
             return;
         }
-
+    
         const siteName = getQueryParam('site');
         const subject = `Testrapport för Site: ${siteName}`;
-        const reportText = reportSection.dataset.reportText;
-
-        // Ersätt alla \n med %0D%0A för att bibehålla radbrytningar i mailto:
-        const formattedBody = encodeURIComponent(reportText);
-
-        // Skapa mailto URL
+        const emailText = reportSection.dataset.emailText;
+    
+        if (!emailText) {
+            alert('Ingen rapport att skicka. Generera rapporten först.');
+            return;
+        }
+    
+        const formattedBody = encodeURIComponent(emailText);
         const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${formattedBody}`;
-
-        // Öppna mailklienten
+    
+        if (mailtoLink.length > 2000) {
+            alert('Rapporten är för lång för att skickas via e-post. Ladda ner rapporten som PDF och bifoga manuellt.');
+            return;
+        }
+    
         window.location.href = mailtoLink;
     }
-
-    // Funktion för att ladda befintliga testresultat
+    
+    // Function to load existing test results
     function loadExistingTestResults(siteData, siteName) {
         if (!siteData[siteName].testing) return;
 
@@ -337,22 +348,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Funktion för att ladda ner rapporten som PDF
+    // Function to download report as PDF
     async function downloadReportAsPDF() {
         try {
-            // Visa laddningsindikator
             loadingIndicator.style.display = 'flex';
 
-            // Fånga rapport sektionen som en canvas
             const canvas = await html2canvas(reportSection, { scale: 2 });
 
-            // Dela canvas i flera sidor om det behövs
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
             const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm marginal på varje sida
+            const pdfWidth = pdf.internal.pageSize.getWidth() - 20;
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            const pageHeight = pdf.internal.pageSize.getHeight() - 20; // 10mm marginal på toppen och botten
+            const pageHeight = pdf.internal.pageSize.getHeight() - 20;
             let heightLeft = pdfHeight;
             let position = 10;
 
@@ -366,10 +374,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 heightLeft -= pageHeight;
             }
 
-            // Spara PDF
             pdf.save(`Testrapport_${siteName}.pdf`);
 
-            // Dölj laddningsindikator
             loadingIndicator.style.display = 'none';
         } catch (error) {
             console.error('Error generating PDF:', error);
@@ -378,16 +384,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Funktion för att stänga Bekräftelse Modal
+    // Function to close confirmation modal
     function closeConfirmationModal() {
         confirmationModal.style.display = 'none';
-        // Return focus till "Generera Rapport" eller "Skicka via E-post" knapp
         const activeButton = document.querySelector('.submit-button, .email-button');
         if (activeButton) {
             activeButton.focus();
         }
 
-        // Återställ modal innehåll om det ändrades
         const modalTitle = document.getElementById('modalTitle');
         const modalDescription = document.getElementById('modalDescription');
 
@@ -395,48 +399,41 @@ document.addEventListener('DOMContentLoaded', function() {
         modalDescription.textContent = 'Är du säker på att du vill utföra denna åtgärd?';
     }
 
-    // Event Listener för Bekräfta Åtgärd Knapp
+    // Event Listener for Confirm Action Button
     if (confirmActionButton) {
         confirmActionButton.addEventListener('click', async function() {
             const modalTitle = document.getElementById('modalTitle');
             if (modalTitle.textContent === 'Bekräfta Rapportgenerering') {
-                // Generera rapport
                 await generateReport(siteData, siteName);
                 confirmationModal.style.display = 'none';
             } else if (modalTitle.textContent === 'Bekräfta E-postsändning') {
-                // Skicka e-postrapport
                 sendEmailReport();
                 confirmationModal.style.display = 'none';
             }
         });
     }
 
-    // Event Listener för Avbryt Åtgärd Knapp
+    // Event Listener for Cancel Action Button
     if (cancelActionButton) {
         cancelActionButton.addEventListener('click', closeConfirmationModal);
     }
 
-    // Event Listener för Ladda Ner Rapport Knapp
+    // Event Listener for Download Report Button
     if (downloadReportButton) {
         downloadReportButton.addEventListener('click', downloadReportAsPDF);
-        // Om du föredrar att ladda ner som TXT kan du lägga till en annan knapp eller ändra denna rad
-        // downloadReportButton.addEventListener('click', downloadReportAsTXT);
     }
 
-    // Event Listener för Skicka Rapport via E-post Knapp
+    // Event Listener for Send Email Report Button
     if (emailReportButton) {
         emailReportButton.addEventListener('click', function() {
-            // Kontrollera om rapporten har genererats
             if (!reportSection.dataset.reportText) {
                 alert('Generera rapporten först innan du skickar via e-post.');
                 return;
             }
 
-            // Visa bekräftelse modal innan email skickas
             confirmationModal.style.display = 'flex';
-            confirmActionButton.focus(); // Sätt fokus till "Ja" knappen
+            confirmActionButton.focus();
 
-            // Ändra modal innehåll för e-postbekräftelse
             const modalTitle = document.getElementById('modalTitle');
             const modalDescription = document.getElementById('modalDescription');
 
@@ -445,7 +442,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Funktion för att initiera formuläret och ladda befintlig data
+    // Function to initialize form and load existing data
     function initializeForm() {
         if (siteData) {
             generateCameraTestForm(siteData, siteName);
@@ -453,31 +450,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Initiera formuläret
     initializeForm();
 
-    // Funktion för att hantera removal av kameror
+    // Function to handle removal of cameras
     function handleRemoveCamera(index) {
         if (!siteData || !siteData[siteName] || !siteData[siteName].hardware) return;
 
-        // Ta bort kameran från hardware array
         siteData[siteName].hardware.splice(index, 1);
 
-        // Ta bort testresultat om det finns
         if (siteData[siteName].testing && siteData[siteName].testing.length > index) {
             siteData[siteName].testing.splice(index, 1);
         }
 
-        // Spara uppdaterad siteData till localStorage
         localStorage.setItem('siteData', JSON.stringify(siteData));
 
-        // Uppdatera sidan
         displaySiteDetails(siteData, siteName);
         generateCameraTestForm(siteData, siteName);
         loadExistingTestResults(siteData, siteName);
     }
 
-    // Event Delegation för Remove Knappar
+    // Event Delegation for Remove Buttons
     siteDetailsContainer.addEventListener('click', function(event) {
         if (event.target && event.target.classList.contains('remove-button')) {
             const index = parseInt(event.target.dataset.index, 10);
@@ -492,39 +484,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Event Listener för att stänga modal när man klickar utanför modal-content
+    // Event Listener to close modal when clicking outside modal-content
     window.addEventListener('click', function(event) {
         if (event.target === confirmationModal) {
             closeConfirmationModal();
         }
     });
-
-    // Funktion för att skicka e-postrapport via mailto:
-    function sendEmailReport() {
-        const userEmail = userEmailInput.value.trim();
-        if (!userEmail) {
-            alert('Vänligen ange din e-postadress.');
-            return;
-        }
-
-        // Enkel e-postadress validering
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailPattern.test(userEmail)) {
-            alert('Vänligen ange en giltig e-postadress.');
-            return;
-        }
-
-        const siteName = getQueryParam('site');
-        const subject = `Testrapport för Site: ${siteName}`;
-        const reportText = reportSection.dataset.reportText;
-
-        // Ersätt alla \n med %0D%0A för att bibehålla radbrytningar i mailto:
-        const formattedBody = encodeURIComponent(reportText);
-
-        // Skapa mailto URL
-        const mailtoLink = `mailto:${userEmail}?subject=${encodeURIComponent(subject)}&body=${formattedBody}`;
-
-        // Öppna mailklienten
-        window.location.href = mailtoLink;
-    }
 });
